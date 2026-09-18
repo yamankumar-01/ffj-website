@@ -1,122 +1,140 @@
-import mongoose from 'mongoose';
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../config/db.js';
 
-const treeSchema = new mongoose.Schema(
+export const Tree = sequelize.define(
+  'Tree',
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     treeId: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
       unique: true,
-      trim: true,
-      index: true,
-      uppercase: true,
     },
     commonName: {
-      type: String,
-      required: [true, 'Common name is required'],
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     scientificName: {
-      type: String,
-      required: [true, 'Scientific botanical name is required'],
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     localName: {
-      type: String,
-      required: [true, 'Local Hindi name is required'],
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     category: {
-      type: String,
-      enum: ['Fruit', 'Medicinal', 'Ornamental', 'Shade'],
-      default: 'Fruit',
-      index: true,
+      type: DataTypes.STRING,
+      defaultValue: 'Fruit',
     },
     photos: {
-      type: [String],
-      default: [],
+      type: DataTypes.TEXT,
+      defaultValue: '[]',
+      get() {
+        const rawValue = this.getDataValue('photos');
+        if (!rawValue) return [];
+        try {
+          return JSON.parse(rawValue);
+        } catch {
+          return [];
+        }
+      },
+      set(val) {
+        if (Array.isArray(val)) {
+          this.setDataValue('photos', JSON.stringify(val));
+        } else if (typeof val === 'string') {
+          try {
+            JSON.parse(val);
+            this.setDataValue('photos', val);
+          } catch {
+            this.setDataValue('photos', JSON.stringify([val]));
+          }
+        } else {
+          this.setDataValue('photos', '[]');
+        }
+      },
     },
     description: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.TEXT,
+      allowNull: false,
     },
     healthBenefits: {
-      type: String,
-      default: '',
+      type: DataTypes.TEXT,
+      defaultValue: '',
     },
     culturalSignificance: {
-      type: String,
-      default: '',
+      type: DataTypes.TEXT,
+      defaultValue: '',
     },
     plantedDate: {
-      type: Date,
-      default: Date.now,
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
     },
     plantedBy: {
-      type: String,
-      default: 'Fruitfull Jaipur Initiative (JECRC)',
-      trim: true,
+      type: DataTypes.STRING,
+      defaultValue: 'Fruitfull Jaipur Initiative (JECRC)',
     },
-    location: {
-      zone: {
-        type: String,
-        required: [true, 'Campus zone is required'],
-        trim: true,
-        index: true,
-      },
-      latitude: {
-        type: Number,
-        default: 26.78198, // JECRC Jaipur default latitude
-      },
-      longitude: {
-        type: Number,
-        default: 75.82251, // JECRC Jaipur default longitude
-      },
+    zone: {
+      type: DataTypes.STRING,
+      defaultValue: 'Block A - Central Lawn',
+    },
+    latitude: {
+      type: DataTypes.FLOAT,
+      defaultValue: 26.78198,
+    },
+    longitude: {
+      type: DataTypes.FLOAT,
+      defaultValue: 75.82251,
     },
     healthStatus: {
-      type: String,
-      enum: ['Healthy', 'Needs Attention', 'Under Treatment'],
-      default: 'Healthy',
-      index: true,
+      type: DataTypes.STRING,
+      defaultValue: 'Healthy',
     },
     lastCheckupDate: {
-      type: Date,
-      default: Date.now,
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
     },
     height: {
-      type: Number, // in meters
-      default: null,
+      type: DataTypes.FLOAT,
+      allowNull: true,
     },
     girth: {
-      type: Number, // in cm
-      default: null,
+      type: DataTypes.FLOAT,
+      allowNull: true,
     },
     caretakerName: {
-      type: String,
-      default: 'JECRC Green Team',
-      trim: true,
+      type: DataTypes.STRING,
+      defaultValue: 'JECRC Green Team',
     },
     qrCodeData: {
-      type: String, // Base64 data URL for fast client rendering
-      default: '',
+      type: DataTypes.TEXT,
+      defaultValue: '',
     },
     qrTargetUrl: {
-      type: String,
-      default: '',
+      type: DataTypes.STRING,
+      defaultValue: '',
     },
   },
   {
+    tableName: 'trees',
     timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    indexes: [
+      { unique: true, fields: ['treeId'] },
+      { fields: ['category'] },
+      { fields: ['zone'] },
+      { fields: ['healthStatus'] },
+    ],
   }
 );
 
-// Virtual for human-readable age calculation
-treeSchema.virtual('age').get(function () {
-  if (!this.plantedDate) return 'Age unknown';
+// Helper for human-readable age calculation
+export const calculateAge = (plantedDate) => {
+  if (!plantedDate) return 'Age unknown';
   const now = new Date();
-  const planted = new Date(this.plantedDate);
+  const planted = new Date(plantedDate);
   const diffMonths = (now.getFullYear() - planted.getFullYear()) * 12 + (now.getMonth() - planted.getMonth());
 
   if (diffMonths <= 0) {
@@ -133,17 +151,16 @@ treeSchema.virtual('age').get(function () {
     return `${years} year${years > 1 ? 's' : ''} old`;
   }
   return `${years} yr${years > 1 ? 's' : ''} ${months} mo${months > 1 ? 's' : ''}`;
-});
+};
 
-// Text indexing for comprehensive multi-field search
-treeSchema.index({
-  treeId: 'text',
-  commonName: 'text',
-  scientificName: 'text',
-  localName: 'text',
-  description: 'text',
-  plantedBy: 'text',
-  'location.zone': 'text',
-});
-
-export const Tree = mongoose.model('Tree', treeSchema);
+// Format tree output to match expected frontend structure (including location object and age)
+Tree.prototype.toFormattedJSON = function () {
+  const json = this.toJSON();
+  json.age = calculateAge(this.plantedDate);
+  json.location = {
+    zone: this.zone,
+    latitude: this.latitude,
+    longitude: this.longitude,
+  };
+  return json;
+};

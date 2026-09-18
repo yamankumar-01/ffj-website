@@ -1,42 +1,56 @@
-import mongoose from 'mongoose';
+import { DataTypes } from 'sequelize';
 import bcrypt from 'bcryptjs';
+import { sequelize } from '../config/db.js';
 
-const adminSchema = new mongoose.Schema(
+export const Admin = sequelize.define(
+  'Admin',
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     username: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
       unique: true,
-      trim: true,
-      lowercase: true,
+      set(val) {
+        this.setDataValue('username', val.toLowerCase().trim());
+      },
     },
     password: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     name: {
-      type: String,
-      default: 'FFJ Admin',
+      type: DataTypes.STRING,
+      defaultValue: 'FFJ Admin',
     },
     role: {
-      type: String,
-      default: 'admin',
+      type: DataTypes.STRING,
+      defaultValue: 'admin',
     },
   },
   {
+    tableName: 'admins',
     timestamps: true,
+    hooks: {
+      beforeCreate: async (admin) => {
+        if (admin.password) {
+          const salt = await bcrypt.genSalt(10);
+          admin.password = await bcrypt.hash(admin.password, salt);
+        }
+      },
+      beforeUpdate: async (admin) => {
+        if (admin.changed('password')) {
+          const salt = await bcrypt.genSalt(10);
+          admin.password = await bcrypt.hash(admin.password, salt);
+        }
+      },
+    },
   }
 );
 
-adminSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
-});
-
-adminSchema.methods.comparePassword = async function (candidatePassword) {
+Admin.prototype.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
-
-export const Admin = mongoose.model('Admin', adminSchema);

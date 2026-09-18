@@ -1,53 +1,51 @@
-import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { Sequelize } from 'sequelize';
 
-let mongoMemoryServer = null;
+let sequelize;
+
+const dbUrl = process.env.DATABASE_URL;
+
+if (dbUrl) {
+  console.log('🐘 Connecting to PostgreSQL database via DATABASE_URL...');
+  sequelize = new Sequelize(dbUrl, {
+    dialect: 'postgres',
+    protocol: 'postgres',
+    logging: process.env.NODE_ENV === 'development' ? console.log : false,
+    dialectOptions: {
+      ssl: process.env.NODE_ENV === 'production' || !dbUrl.includes('localhost')
+        ? {
+            require: true,
+            rejectUnauthorized: false,
+          }
+        : false,
+    },
+    pool: {
+      max: 10,
+      min: 0,
+      acquire: 30000,
+      idle: 10000,
+    },
+  });
+} else {
+  console.log('📁 No DATABASE_URL found. Using local SQLite storage (dev.sqlite) for seamless instant development...');
+  sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: './dev.sqlite',
+    logging: false,
+  });
+}
 
 export const connectDB = async () => {
   try {
-    const uri = process.env.MONGODB_URI;
-
-    if (uri) {
-      console.log(`📡 Attempting to connect to MongoDB URI: ${uri.replace(/\/\/.*@/, '//<credentials>@')}`);
-      await mongoose.connect(uri, {
-        serverSelectionTimeoutMS: 5000,
-      });
-      console.log('✅ Successfully connected to MongoDB database.');
-      return;
-    }
-
-    console.log('ℹ️ No MONGODB_URI found. Starting embedded MongoDB Memory Server for seamless instant development...');
-    mongoMemoryServer = await MongoMemoryServer.create({
-      instance: {
-        dbName: 'ffj_tree_aadhar'
-      }
-    });
-    const memoryUri = mongoMemoryServer.getUri();
-    await mongoose.connect(memoryUri);
-    console.log(`✅ Embedded MongoDB Memory Server started successfully at: ${memoryUri}`);
+    await sequelize.authenticate();
+    console.log(`✅ Database connection established successfully (${sequelize.getDialect().toUpperCase()}).`);
+    
+    // Auto-sync schema (create tables if they do not exist)
+    await sequelize.sync({ alter: true });
+    console.log('✅ Database schema synchronized.');
   } catch (error) {
-    console.warn(`⚠️ Failed to connect to external MongoDB (${error.message}). Falling back to MongoMemoryServer...`);
-    try {
-      if (!mongoMemoryServer) {
-        mongoMemoryServer = await MongoMemoryServer.create({
-          instance: {
-            dbName: 'ffj_tree_aadhar'
-          }
-        });
-      }
-      const memoryUri = mongoMemoryServer.getUri();
-      await mongoose.connect(memoryUri);
-      console.log(`✅ Fallback MongoMemoryServer connected successfully at: ${memoryUri}`);
-    } catch (fallbackErr) {
-      console.error('❌ Critical MongoDB connection failure:', fallbackErr);
-      process.exit(1);
-    }
+    console.error('❌ Unable to connect to database:', error);
+    throw error;
   }
 };
 
-export const disconnectDB = async () => {
-  await mongoose.disconnect();
-  if (mongoMemoryServer) {
-    await mongoMemoryServer.stop();
-  }
-};
+export { sequelize };

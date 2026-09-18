@@ -1,4 +1,5 @@
 import QRCode from 'qrcode';
+import { Op } from 'sequelize';
 import { Tree } from '../models/Tree.js';
 
 export const getBaseTreeUrl = (treeId) => {
@@ -44,9 +45,14 @@ export const generateQRCodeBuffer = async (url) => {
 
 export const generateNextTreeId = async () => {
   // Find highest existing treeId starting with FFJ-TREE-
-  const latestTree = await Tree.findOne({ treeId: { $regex: /^FFJ-TREE-\d+$/ } })
-    .sort({ treeId: -1 })
-    .lean();
+  const latestTree = await Tree.findOne({
+    where: {
+      treeId: {
+        [Op.like]: 'FFJ-TREE-%',
+      },
+    },
+    order: [['treeId', 'DESC']],
+  });
 
   if (!latestTree || !latestTree.treeId) {
     return 'FFJ-TREE-0001';

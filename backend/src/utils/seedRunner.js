@@ -5,30 +5,51 @@ import { generateQRCodeDataUrl, getBaseTreeUrl } from '../services/qrService.js'
 
 export const seedDatabase = async () => {
   try {
-    const existingCount = await Tree.countDocuments();
+    const existingCount = await Tree.count();
     if (existingCount > 0) {
       console.log(`🌿 Database already contains ${existingCount} trees. Skipping auto-seeding.`);
     } else {
       console.log('🌱 Seeding initial 10 botanical trees with dynamic QR codes...');
       
-      for (const treeData of initialTrees) {
-        const targetUrl = getBaseTreeUrl(treeData.treeId);
+      for (const rawTree of initialTrees) {
+        const targetUrl = getBaseTreeUrl(rawTree.treeId);
         const qrCodeData = await generateQRCodeDataUrl(targetUrl);
-        
+
         await Tree.create({
-          ...treeData,
+          treeId: rawTree.treeId,
+          commonName: rawTree.commonName,
+          scientificName: rawTree.scientificName,
+          localName: rawTree.localName,
+          category: rawTree.category,
+          photos: rawTree.photos,
+          description: rawTree.description,
+          healthBenefits: rawTree.healthBenefits,
+          culturalSignificance: rawTree.culturalSignificance,
+          plantedDate: rawTree.plantedDate,
+          plantedBy: rawTree.plantedBy,
+          zone: rawTree.location?.zone || 'Block A - Central Lawn',
+          latitude: rawTree.location?.latitude || 26.78198,
+          longitude: rawTree.location?.longitude || 75.82251,
+          healthStatus: rawTree.healthStatus || 'Healthy',
+          lastCheckupDate: rawTree.lastCheckupDate || new Date(),
+          height: rawTree.height,
+          girth: rawTree.girth,
+          caretakerName: rawTree.caretakerName,
           qrTargetUrl: targetUrl,
           qrCodeData,
         });
       }
-      console.log('✅ Successfully seeded 10 botanical tree identities with high-res QRs.');
+      console.log('✅ Successfully seeded 10 botanical tree identities with high-res QRs into database.');
     }
 
     // Ensure default admin exists
     const adminUser = process.env.ADMIN_USER || 'admin';
     const adminPass = process.env.ADMIN_PASSWORD || 'ffj@jecrc2025';
 
-    const existingAdmin = await Admin.findOne({ username: adminUser.toLowerCase() });
+    const existingAdmin = await Admin.findOne({
+      where: { username: adminUser.toLowerCase() },
+    });
+
     if (!existingAdmin) {
       await Admin.create({
         username: adminUser.toLowerCase(),

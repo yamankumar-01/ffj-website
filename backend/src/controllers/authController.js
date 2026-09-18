@@ -11,7 +11,10 @@ export const login = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Username and password are required' });
     }
 
-    const admin = await Admin.findOne({ username: username.toLowerCase().trim() });
+    const admin = await Admin.findOne({
+      where: { username: username.toLowerCase().trim() },
+    });
+
     if (!admin) {
       return res.status(401).json({ success: false, message: 'Invalid admin credentials' });
     }
@@ -22,7 +25,7 @@ export const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: admin._id, username: admin.username, role: admin.role, name: admin.name },
+      { id: admin.id, username: admin.username, role: admin.role, name: admin.name },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -32,7 +35,7 @@ export const login = async (req, res) => {
       message: 'Login successful',
       token,
       admin: {
-        id: admin._id,
+        id: admin.id,
         username: admin.username,
         name: admin.name,
         role: admin.role,
@@ -46,7 +49,9 @@ export const login = async (req, res) => {
 
 export const getMe = async (req, res) => {
   try {
-    const admin = await Admin.findById(req.admin.id).select('-password');
+    const admin = await Admin.findByPk(req.admin.id, {
+      attributes: { exclude: ['password'] },
+    });
     if (!admin) {
       return res.status(404).json({ success: false, message: 'Admin not found' });
     }

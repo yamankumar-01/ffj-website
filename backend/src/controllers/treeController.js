@@ -1,3 +1,4 @@
+import { Op, fn, col } from 'sequelize';
 import { Tree } from '../models/Tree.js';
 import {
   generateQRCodeDataUrl,
@@ -9,68 +10,76 @@ import csvParser from 'csv-parser';
 import { Readable } from 'stream';
 
 /**
- * Get Paginated & Filtered Trees (Server-side search & filtering)
+ * Get Paginated & Filtered Trees (Server-side search & filtering with Sequelize)
  */
 export const getTrees = async (req, res) => {
   try {
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 12));
-    const skip = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
     const { search, category, zone, healthStatus, sort } = req.query;
-    const filter = {};
+    const whereConditions = [];
 
-    // Search query matches treeId, commonName, scientificName, localName, or plantedBy
+    // Multi-field search
     if (search && search.trim()) {
-      const searchRegex = new RegExp(search.trim(), 'i');
-      filter.$or = [
-        { treeId: searchRegex },
-        { commonName: searchRegex },
-        { scientificName: searchRegex },
-        { localName: searchRegex },
-        { plantedBy: searchRegex },
-        { 'location.zone': searchRegex },
-      ];
+      const term = `%${search.trim()}%`;
+      whereConditions.push({
+        [Op.or]: [
+          { treeId: { [Op.like]: term } },
+          { commonName: { [Op.like]: term } },
+          { scientificName: { [Op.like]: term } },
+          { localName: { [Op.like]: term } },
+          { plantedBy: { [Op.like]: term } },
+          { zone: { [Op.like]: term } },
+        ],
+      });
     }
 
     if (category && category !== 'All') {
-      filter.category = category;
+      whereConditions.push({ category });
     }
 
     if (zone && zone !== 'All') {
-      filter['location.zone'] = zone;
+      whereConditions.push({ zone });
     }
 
     if (healthStatus && healthStatus !== 'All') {
-      filter.healthStatus = healthStatus;
+      whereConditions.push({ healthStatus });
     }
+
+    const where = whereConditions.length > 0 ? { [Op.and]: whereConditions } : {};
 
     // Sorting
-    let sortOption = { createdAt: -1 };
+    let order = [['createdAt', 'DESC']];
     if (sort === 'oldest') {
-      sortOption = { plantedDate: 1 };
+      order = [['plantedDate', 'ASC']];
     } else if (sort === 'newest') {
-      sortOption = { plantedDate: -1 };
+      order = [['plantedDate', 'DESC']];
     } else if (sort === 'treeId_asc') {
-      sortOption = { treeId: 1 };
+      order = [['treeId', 'ASC']];
     } else if (sort === 'treeId_desc') {
-      sortOption = { treeId: -1 };
+      order = [['treeId', 'DESC']];
     } else if (sort === 'name_asc') {
-      sortOption = { commonName: 1 };
+      order = [['commonName', 'ASC']];
     }
 
-    const [trees, total] = await Promise.all([
-      Tree.find(filter).sort(sortOption).skip(skip).limit(limit),
-      Tree.countDocuments(filter),
-    ]);
+    const { rows, count } = await Tree.findAndCountAll({
+      where,
+      limit,
+      offset,
+      order,
+    });
+
+    const formattedTrees = rows.map((tree) => tree.toFormattedJSON());
 
     res.json({
       success: true,
-      trees,
-      total,
+      trees: formattedTrees,
+      total: count,
       page,
       limit,
-      totalPages: Math.ceil(total / limit) || 1,
+      totalPages: Math.ceil(count / limit) || 1,
     });
   } catch (error) {
     console.error('Error fetching trees:', error);
@@ -83,41 +92,60 @@ export const getTrees = async (req, res) => {
  */
 export const getStats = async (req, res) => {
   try {
-    const [
-      totalTrees,
-      speciesList,
-      categoriesAggregate,
-      healthAggregate,
-      zonesList,
-      recentPlantations,
-    ] = await Promise.all([
-      Tree.countDocuments(),
-      Tree.distinct('scientificName'),
-      Tree.aggregate([{ $group: { _id: '$category', count: { $sum: 1 } } }]),
-      Tree.aggregate([{ $group: { _id: '$healthStatus', count: { $sum: 1 } } }]),
-      Tree.distinct('location.zone'),
-      Tree.find().sort({ plantedDate: -1 }).limit(5).select('treeId commonName localName plantedDate photos category'),
-    ]);
+    const totalTrees = await Tree.count();
 
-    const categoryCounts = categoriesAggregate.reduce((acc, curr) => {
-      acc[curr._id] = curr.count;
+    // Distinct species count
+    const speciesRows = await Tree.findAll({
+      attributes: [[fn('DISTINCT', col('scientificName')), 'scientificName']],
+      raw: true,
+    });
+    const speciesCount = speciesRows.filter((r) => r.scientificName).length;
+
+    // Category aggregation
+    const categoryRows = await Tree.findAll({
+      attributes: ['category', [fn('COUNT', col('id')), 'count']],
+      group: ['category'],
+      raw: true,
+    });
+    const categories = categoryRows.reduce((acc, curr) => {
+      acc[curr.category] = parseInt(curr.count, 10);
       return acc;
     }, {});
 
-    const healthCounts = healthAggregate.reduce((acc, curr) => {
-      acc[curr._id] = curr.count;
+    // Health status aggregation
+    const healthRows = await Tree.findAll({
+      attributes: ['healthStatus', [fn('COUNT', col('id')), 'count']],
+      group: ['healthStatus'],
+      raw: true,
+    });
+    const health = healthRows.reduce((acc, curr) => {
+      acc[curr.healthStatus] = parseInt(curr.count, 10);
       return acc;
     }, {});
+
+    // Distinct campus zones
+    const zoneRows = await Tree.findAll({
+      attributes: [[fn('DISTINCT', col('zone')), 'zone']],
+      raw: true,
+    });
+    const zones = zoneRows.map((r) => r.zone).filter(Boolean);
+
+    // Recent plantations
+    const recentTrees = await Tree.findAll({
+      order: [['plantedDate', 'DESC']],
+      limit: 5,
+    });
+    const recentPlantations = recentTrees.map((t) => t.toFormattedJSON());
 
     res.json({
       success: true,
       stats: {
         totalTrees,
-        speciesCount: speciesList.length,
-        campusZonesCount: zonesList.length,
-        categories: categoryCounts,
-        health: healthCounts,
-        zones: zonesList,
+        speciesCount,
+        campusZonesCount: zones.length,
+        categories,
+        health,
+        zones,
         recentPlantations,
       },
     });
@@ -128,22 +156,28 @@ export const getStats = async (req, res) => {
 };
 
 /**
- * Get Single Tree by treeId (e.g. FFJ-TREE-0001) or MongoDB _id
+ * Get Single Tree by treeId (e.g. FFJ-TREE-0001) or primary key
  */
 export const getTreeById = async (req, res) => {
   try {
     const { treeId } = req.params;
+    const isNumeric = /^\d+$/.test(treeId);
 
-    let tree = await Tree.findOne({ treeId: treeId.toUpperCase() });
-    if (!tree && treeId.match(/^[0-9a-fA-F]{24}$/)) {
-      tree = await Tree.findById(treeId);
-    }
+    const tree = await Tree.findOne({
+      where: isNumeric
+        ? {
+            [Op.or]: [{ treeId: treeId.toUpperCase() }, { id: parseInt(treeId, 10) }],
+          }
+        : {
+            treeId: treeId.toUpperCase(),
+          },
+    });
 
     if (!tree) {
       return res.status(404).json({ success: false, message: `Tree not found for ID: ${treeId}` });
     }
 
-    res.json({ success: true, tree });
+    res.json({ success: true, tree: tree.toFormattedJSON() });
   } catch (error) {
     console.error('Error fetching tree:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch tree', error: error.message });
@@ -162,7 +196,7 @@ export const createTree = async (req, res) => {
       treeData.treeId = await generateNextTreeId();
     } else {
       treeData.treeId = treeData.treeId.trim().toUpperCase();
-      const existing = await Tree.findOne({ treeId: treeData.treeId });
+      const existing = await Tree.findOne({ where: { treeId: treeData.treeId } });
       if (existing) {
         return res.status(400).json({
           success: false,
@@ -171,9 +205,15 @@ export const createTree = async (req, res) => {
       }
     }
 
-    // Format location
-    if (typeof treeData.location === 'string') {
-      treeData.location = { zone: treeData.location };
+    // Unpack location if object
+    if (treeData.location) {
+      if (typeof treeData.location === 'string') {
+        treeData.zone = treeData.location;
+      } else {
+        if (treeData.location.zone) treeData.zone = treeData.location.zone;
+        if (treeData.location.latitude) treeData.latitude = parseFloat(treeData.location.latitude);
+        if (treeData.location.longitude) treeData.longitude = parseFloat(treeData.location.longitude);
+      }
     }
 
     // Build QR Target URL
@@ -181,18 +221,17 @@ export const createTree = async (req, res) => {
     treeData.qrTargetUrl = targetUrl;
     treeData.qrCodeData = await generateQRCodeDataUrl(targetUrl);
 
-    // Ensure photos is an array
+    // Photos array
     if (typeof treeData.photos === 'string') {
       treeData.photos = treeData.photos.split(',').map((p) => p.trim()).filter(Boolean);
     }
 
-    const tree = new Tree(treeData);
-    await tree.save();
+    const tree = await Tree.create(treeData);
 
     res.status(201).json({
       success: true,
       message: `Tree ${tree.treeId} created successfully`,
-      tree,
+      tree: tree.toFormattedJSON(),
     });
   } catch (error) {
     console.error('Error creating tree:', error);
@@ -206,10 +245,13 @@ export const createTree = async (req, res) => {
 export const updateTree = async (req, res) => {
   try {
     const { treeId } = req.params;
-    let tree = await Tree.findOne({ treeId: treeId.toUpperCase() });
-    if (!tree && treeId.match(/^[0-9a-fA-F]{24}$/)) {
-      tree = await Tree.findById(treeId);
-    }
+    const isNumeric = /^\d+$/.test(treeId);
+
+    const tree = await Tree.findOne({
+      where: isNumeric
+        ? { [Op.or]: [{ treeId: treeId.toUpperCase() }, { id: parseInt(treeId, 10) }] }
+        : { treeId: treeId.toUpperCase() },
+    });
 
     if (!tree) {
       return res.status(404).json({ success: false, message: 'Tree not found' });
@@ -217,22 +259,17 @@ export const updateTree = async (req, res) => {
 
     const updates = { ...req.body };
 
-    // If photos is comma-separated string, convert to array
+    // Photos
     if (typeof updates.photos === 'string') {
       updates.photos = updates.photos.split(',').map((p) => p.trim()).filter(Boolean);
     }
 
-    // If location is string, format object
-    if (updates.zone) {
-      updates.location = {
-        ...tree.location.toObject(),
-        zone: updates.zone,
-        latitude: updates.latitude !== undefined ? Number(updates.latitude) : tree.location.latitude,
-        longitude: updates.longitude !== undefined ? Number(updates.longitude) : tree.location.longitude,
-      };
-    }
+    // Location
+    if (updates.zone) tree.zone = updates.zone;
+    if (updates.latitude !== undefined) tree.latitude = parseFloat(updates.latitude);
+    if (updates.longitude !== undefined) tree.longitude = parseFloat(updates.longitude);
 
-    // Check if target URL or treeId changed
+    // Check if treeId changed
     if (updates.treeId && updates.treeId.toUpperCase() !== tree.treeId) {
       updates.treeId = updates.treeId.trim().toUpperCase();
       const targetUrl = getBaseTreeUrl(updates.treeId);
@@ -240,13 +277,12 @@ export const updateTree = async (req, res) => {
       updates.qrCodeData = await generateQRCodeDataUrl(targetUrl);
     }
 
-    Object.assign(tree, updates);
-    await tree.save();
+    await tree.update(updates);
 
     res.json({
       success: true,
       message: `Tree ${tree.treeId} updated successfully`,
-      tree,
+      tree: tree.toFormattedJSON(),
     });
   } catch (error) {
     console.error('Error updating tree:', error);
@@ -260,18 +296,26 @@ export const updateTree = async (req, res) => {
 export const deleteTree = async (req, res) => {
   try {
     const { treeId } = req.params;
-    let tree = await Tree.findOneAndDelete({ treeId: treeId.toUpperCase() });
-    if (!tree && treeId.match(/^[0-9a-fA-F]{24}$/)) {
-      tree = await Tree.findByIdAndDelete(treeId);
-    }
+    const isNumeric = /^\d+$/.test(treeId);
+
+    const tree = await Tree.findOne({
+      where: isNumeric
+        ? { [Op.or]: [{ treeId: treeId.toUpperCase() }, { id: parseInt(treeId, 10) }] }
+        : { treeId: treeId.toUpperCase() },
+    });
 
     if (!tree) {
       return res.status(404).json({ success: false, message: 'Tree not found' });
     }
 
+    const deletedTreeId = tree.treeId;
+    const deletedName = tree.commonName;
+
+    await tree.destroy();
+
     res.json({
       success: true,
-      message: `Tree ${tree.treeId} (${tree.commonName}) deleted successfully`,
+      message: `Tree ${deletedTreeId} (${deletedName}) deleted successfully`,
     });
   } catch (error) {
     console.error('Error deleting tree:', error);
@@ -304,9 +348,10 @@ export const bulkImportCSV = async (req, res) => {
     }
 
     let nextIdNumber = 1;
-    const latestTree = await Tree.findOne({ treeId: { $regex: /^FFJ-TREE-\d+$/ } })
-      .sort({ treeId: -1 })
-      .lean();
+    const latestTree = await Tree.findOne({
+      where: { treeId: { [Op.like]: 'FFJ-TREE-%' } },
+      order: [['treeId', 'DESC']],
+    });
 
     if (latestTree && latestTree.treeId) {
       const m = latestTree.treeId.match(/^FFJ-TREE-(\d+)$/);
@@ -329,8 +374,7 @@ export const bulkImportCSV = async (req, res) => {
           currentTreeId = `FFJ-TREE-${String(nextIdNumber++).padStart(4, '0')}`;
         }
 
-        // Check uniqueness
-        const existing = await Tree.findOne({ treeId: currentTreeId });
+        const existing = await Tree.findOne({ where: { treeId: currentTreeId } });
         if (existing) {
           errors.push(`Row ${i + 1}: Tree ID ${currentTreeId} already exists in database`);
           continue;
@@ -343,7 +387,7 @@ export const bulkImportCSV = async (req, res) => {
           ? row.photos.split('|').map((p) => p.trim()).filter(Boolean)
           : [];
 
-        const newTree = new Tree({
+        const newTree = await Tree.create({
           treeId: currentTreeId,
           commonName: row.commonName.trim(),
           scientificName: row.scientificName.trim(),
@@ -351,16 +395,14 @@ export const bulkImportCSV = async (req, res) => {
           category: ['Fruit', 'Medicinal', 'Ornamental', 'Shade'].includes(row.category)
             ? row.category
             : 'Fruit',
-          description: row.description || `${row.commonName} planted on JECRC Campus as part of Fruitfull Jaipur initiative.`,
+          description: row.description || `${row.commonName} planted on JECRC Campus.`,
           healthBenefits: row.healthBenefits || '',
           culturalSignificance: row.culturalSignificance || '',
           plantedDate: row.plantedDate ? new Date(row.plantedDate) : new Date(),
           plantedBy: row.plantedBy || 'Fruitfull Jaipur Initiative',
-          location: {
-            zone: row.zone || 'JECRC Main Green Belt',
-            latitude: row.latitude ? parseFloat(row.latitude) : 26.78198,
-            longitude: row.longitude ? parseFloat(row.longitude) : 75.82251,
-          },
+          zone: row.zone || 'JECRC Main Green Belt',
+          latitude: row.latitude ? parseFloat(row.latitude) : 26.78198,
+          longitude: row.longitude ? parseFloat(row.longitude) : 75.82251,
           healthStatus: ['Healthy', 'Needs Attention', 'Under Treatment'].includes(row.healthStatus)
             ? row.healthStatus
             : 'Healthy',
@@ -373,7 +415,6 @@ export const bulkImportCSV = async (req, res) => {
           qrTargetUrl: targetUrl,
         });
 
-        await newTree.save();
         importedTrees.push({ treeId: newTree.treeId, commonName: newTree.commonName });
       } catch (rowErr) {
         errors.push(`Row ${i + 1}: ${rowErr.message}`);
@@ -400,16 +441,16 @@ export const bulkImportCSV = async (req, res) => {
 export const exportQRZip = async (req, res) => {
   try {
     const { category, zone } = req.query;
-    const filter = {};
-    if (category && category !== 'All') filter.category = category;
-    if (zone && zone !== 'All') filter['location.zone'] = zone;
+    const where = {};
+    if (category && category !== 'All') where.category = category;
+    if (zone && zone !== 'All') where.zone = zone;
 
-    const trees = await Tree.find(filter).sort({ treeId: 1 });
+    const trees = await Tree.findAll({ where, order: [['treeId', 'ASC']] });
     if (!trees || trees.length === 0) {
       return res.status(404).json({ success: false, message: 'No trees found to export' });
     }
 
-    await createTreesQRZip(trees, res);
+    await createTreesQRZip(trees.map((t) => t.toFormattedJSON()), res);
   } catch (error) {
     console.error('Error exporting QR zip:', error);
     res.status(500).json({ success: false, message: 'Failed to generate QR zip', error: error.message });
@@ -422,16 +463,16 @@ export const exportQRZip = async (req, res) => {
 export const exportPlaquesPDF = async (req, res) => {
   try {
     const { category, zone } = req.query;
-    const filter = {};
-    if (category && category !== 'All') filter.category = category;
-    if (zone && zone !== 'All') filter['location.zone'] = zone;
+    const where = {};
+    if (category && category !== 'All') where.category = category;
+    if (zone && zone !== 'All') where.zone = zone;
 
-    const trees = await Tree.find(filter).sort({ treeId: 1 });
+    const trees = await Tree.findAll({ where, order: [['treeId', 'ASC']] });
     if (!trees || trees.length === 0) {
       return res.status(404).json({ success: false, message: 'No trees found to export' });
     }
 
-    await createPrintablePlaquesPDF(trees, res);
+    await createPrintablePlaquesPDF(trees.map((t) => t.toFormattedJSON()), res);
   } catch (error) {
     console.error('Error generating PDF plaques:', error);
     res.status(500).json({ success: false, message: 'Failed to generate PDF plaques', error: error.message });
