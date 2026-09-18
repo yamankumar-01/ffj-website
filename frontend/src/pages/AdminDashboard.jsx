@@ -49,6 +49,85 @@ export const AdminDashboard = () => {
   const [importLoading, setImportLoading] = useState(false);
   const [importResult, setImportResult] = useState(null);
 
+  // Photo Upload States
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [urlInput, setUrlInput] = useState('');
+
+  // Compress and resize image file to lightweight, high-res data URL
+  const compressImageFile = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_DIM = 1200;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_DIM) {
+              height = Math.round((height * MAX_DIM) / width);
+              width = MAX_DIM;
+            }
+          } else {
+            if (height > MAX_DIM) {
+              width = Math.round((width * MAX_DIM) / height);
+              height = MAX_DIM;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+          resolve(dataUrl);
+        };
+        img.onerror = (err) => reject(err);
+      };
+      reader.onerror = (err) => reject(err);
+    });
+  };
+
+  const handlePhotoUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    setUploadingPhoto(true);
+    try {
+      const processed = await Promise.all(files.map(compressImageFile));
+      setFormData((prev) => ({
+        ...prev,
+        photos: [...(prev.photos || []), ...processed],
+      }));
+    } catch (err) {
+      alert('Failed to process image: ' + err.message);
+    } finally {
+      setUploadingPhoto(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleRemovePhoto = (indexToRemove) => {
+    setFormData((prev) => ({
+      ...prev,
+      photos: (prev.photos || []).filter((_, idx) => idx !== indexToRemove),
+    }));
+  };
+
+  const handleAddUrl = () => {
+    if (urlInput.trim()) {
+      setFormData((prev) => ({
+        ...prev,
+        photos: [...(prev.photos || []), urlInput.trim()],
+      }));
+      setUrlInput('');
+    }
+  };
+
   function getInitialFormData() {
     return {
       treeId: '',
@@ -65,7 +144,7 @@ export const AdminDashboard = () => {
       height: '',
       girth: '',
       caretakerName: 'Ramesh Ji (Horticulturist)',
-      photos: '',
+      photos: [],
       description: '',
       healthBenefits: '',
       culturalSignificance: '',
@@ -131,7 +210,7 @@ export const AdminDashboard = () => {
       height: tree.height || '',
       girth: tree.girth || '',
       caretakerName: tree.caretakerName || '',
-      photos: tree.photos ? tree.photos.join(', ') : '',
+      photos: Array.isArray(tree.photos) ? tree.photos : (tree.photos ? [tree.photos] : []),
       description: tree.description || '',
       healthBenefits: tree.healthBenefits || '',
       culturalSignificance: tree.culturalSignificance || '',
@@ -165,9 +244,9 @@ export const AdminDashboard = () => {
         },
         height: formData.height ? parseFloat(formData.height) : null,
         girth: formData.girth ? parseFloat(formData.girth) : null,
-        photos: formData.photos
-          ? formData.photos.split(',').map((p) => p.trim()).filter(Boolean)
-          : [],
+        photos: Array.isArray(formData.photos)
+          ? formData.photos
+          : (formData.photos ? formData.photos.split(',').map((p) => p.trim()).filter(Boolean) : []),
       };
 
       if (editingTree) {
@@ -883,17 +962,89 @@ export const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block font-bold text-gray-700 mb-1">
-                  Photo URLs (comma-separated, Cloudinary or web links)
+              {/* Tree Photos: Direct File Upload & URL option */}
+              <div className="space-y-2">
+                <label className="block font-bold text-gray-700">
+                  Tree Photos (Upload JPG / PNG Directly or Add URL)
                 </label>
-                <input
-                  type="text"
-                  placeholder="https://res.cloudinary.com/..., https://..."
-                  value={formData.photos}
-                  onChange={(e) => setFormData({ ...formData, photos: e.target.value })}
-                  className="w-full p-2.5 rounded-xl border border-gray-300"
-                />
+
+                {/* Upload & Dropzone Area */}
+                <div className="border-2 border-dashed border-[#52b788]/40 hover:border-[#1b4332] bg-[#f7f5ee] rounded-2xl p-4 text-center transition-colors">
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <label className="py-2.5 px-4 rounded-xl bg-[#1b4332] hover:bg-[#2d6a4f] text-white font-bold text-xs flex items-center gap-2 cursor-pointer shadow-xs transition-all">
+                      <Upload className="w-4 h-4" />
+                      <span>{uploadingPhoto ? 'Processing Photo...' : '📸 Choose JPG / PNG Photo'}</span>
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/webp"
+                        multiple
+                        disabled={uploadingPhoto}
+                        onChange={handlePhotoUpload}
+                        className="hidden"
+                      />
+                    </label>
+
+                    <span className="text-gray-400 text-xs font-medium">or</span>
+
+                    {/* Image URL fallback */}
+                    <div className="flex items-center gap-1.5 w-full sm:w-auto flex-1 max-w-md">
+                      <input
+                        type="url"
+                        placeholder="Paste web URL (https://...)"
+                        value={urlInput}
+                        onChange={(e) => setUrlInput(e.target.value)}
+                        className="w-full p-2 text-xs rounded-xl border border-gray-300 bg-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddUrl}
+                        className="py-2 px-3 bg-[#2d6a4f] hover:bg-[#1b4332] text-white font-bold text-xs rounded-xl shrink-0 cursor-pointer"
+                      >
+                        Add URL
+                      </button>
+                    </div>
+                  </div>
+
+                  <p className="text-[11px] text-gray-500 mt-2">
+                    Directly select JPG photos from your phone or PC. Automatically compressed for fast loading outdoors!
+                  </p>
+                </div>
+
+                {/* Photo Previews */}
+                {formData.photos && formData.photos.length > 0 && (
+                  <div className="pt-2">
+                    <span className="text-[11px] font-bold text-gray-500 block mb-1.5">
+                      Selected Photos ({formData.photos.length}) — First photo is the primary hero image:
+                    </span>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5">
+                      {formData.photos.map((photoUrl, idx) => (
+                        <div
+                          key={idx}
+                          className="relative rounded-xl overflow-hidden aspect-square border border-gray-200 bg-gray-50 shadow-xs group"
+                        >
+                          <img
+                            src={photoUrl}
+                            alt={`Tree photo ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                          {idx === 0 && (
+                            <span className="absolute top-1 left-1 bg-[#1b4332]/90 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-xs">
+                              Hero Photo
+                            </span>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleRemovePhoto(idx)}
+                            className="absolute top-1 right-1 p-1 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-md transition-colors cursor-pointer"
+                            title="Delete photo"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>
