@@ -1,0 +1,17 @@
+{
+  "name": "ffj-tree-aadhar",
+  "version": "1.0.0",
+  "description": "Tree Aadhar - Digital Identity System for Fruitfull Jaipur (FFJ)",
+  "scripts": {
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev"
+  },
+  "keywords": [
+    "tree-aadhar",
+    "fruitfull-jaipur",
+    "jecrc",
+    "botanical-identity"
+  ],
+  "author": "Fruitfull Jaipur Team",
+  "license": "ISC"
+}

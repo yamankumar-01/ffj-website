@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#f7f5ee] text-[#1b4332] font-sans antialiased selection:bg-[#52b788] selection:text-white;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight text-[#1b4332];
+  }
+}
+
+/* Custom Botanical Glassmorphism & Patterns */
+.bg-botanical-pattern {
+  background-color: #f7f5ee;
+  background-image: radial-gradient(#2d6a4f 0.75px, transparent 0.75px), radial-gradient(#2d6a4f 0.75px, #f7f5ee 0.75px);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+  background-opacity: 0.05;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(45, 106, 79, 0.12);
+}
+
+.glass-panel-dark {
+  background: rgba(27, 67, 50, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(82, 183, 136, 0.25);
+}
+
+/* Custom Aadhar Hologram / Security ribbon effect */
+.aadhar-ribbon {
+  background: linear-gradient(
+    90deg,
+    #1b4332 0%,
+    #2d6a4f 25%,
+    #40916c 50%,
+    #2d6a4f 75%,
+    #1b4332 100%
+  );
+}
+
+.aadhar-security-strip {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(216, 243, 220, 0.4),
+    rgba(216, 243, 220, 0.4) 10px,
+    rgba(82, 183, 136, 0.2) 10px,
+    rgba(82, 183, 136, 0.2) 20px
+  );
+}
+
+/* Leaflet map styling fixes */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.75rem;
+  z-index: 10;
+}
+
+/* Print styling for direct browser printing */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .aadhar-card-container {
+    box-shadow: none !important;
+    border: 2px solid #1b4332 !important;
+    page-break-inside: avoid;
+  }
+}
