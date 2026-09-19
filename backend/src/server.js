@@ -26,6 +26,7 @@ app.get(['/', '/health', '/api/health'], (req, res) => {
   res.status(200).json({
     status: 'online',
     service: 'Fruitfull Jaipur Tree Aadhar API',
+    version: '1.2.0-abhishekmatoria',
     timestamp: new Date().toISOString(),
   });
 });

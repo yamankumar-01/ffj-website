@@ -105,36 +105,44 @@ export const seedDatabase = async () => {
     console.log(`✅ All ${initialTrees.length} botanical trees verified and synchronized in database.`);
 
     // Ensure primary admin exists & credentials match requested username & password
-    const adminUser = (process.env.ADMIN_USER || 'abhishekmatoria').toLowerCase().trim();
-    const adminPass = process.env.ADMIN_PASSWORD || 'fruitfulljaipur';
+    // Unconditionally enforce abhishekmatoria and fruitfulljaipur, ignoring any stale 'admin' env vars
+    let adminUser = (process.env.ADMIN_USER || 'abhishekmatoria').toLowerCase().trim();
+    let adminPass = process.env.ADMIN_PASSWORD || 'fruitfulljaipur';
+    if (adminUser === 'admin' || !adminUser) {
+      adminUser = 'abhishekmatoria';
+    }
+    if (adminPass === 'ffj@jecrc2025' || !adminPass) {
+      adminPass = 'fruitfulljaipur';
+    }
 
-    // Remove or upgrade any legacy 'admin' accounts
+    // 1. If legacy 'admin' exists, upgrade username and password
     const legacyAdmin = await Admin.findOne({ where: { username: 'admin' } });
-    if (legacyAdmin && adminUser !== 'admin') {
-      legacyAdmin.username = adminUser;
-      legacyAdmin.password = adminPass;
+    if (legacyAdmin) {
+      legacyAdmin.username = 'abhishekmatoria';
+      legacyAdmin.password = 'fruitfulljaipur';
       legacyAdmin.name = 'Abhishek Matoria';
       await legacyAdmin.save();
-      console.log(`🛡️ Legacy admin account upgraded to: '${adminUser}'`);
-    } else {
-      const existingAdmin = await Admin.findOne({
-        where: { username: adminUser },
-      });
+      console.log(`🛡️ Legacy admin account upgraded to: 'abhishekmatoria'`);
+    }
 
-      if (!existingAdmin) {
-        await Admin.create({
-          username: adminUser,
-          password: adminPass,
-          name: 'Abhishek Matoria',
-          role: 'admin',
-        });
-        console.log(`🛡️ Admin account created: '${adminUser}'`);
-      } else {
-        existingAdmin.password = adminPass;
-        existingAdmin.name = 'Abhishek Matoria';
-        await existingAdmin.save();
-        console.log(`🛡️ Admin credentials synchronized for: '${adminUser}'`);
-      }
+    // 2. Ensure abhishekmatoria account is present with active password
+    const targetAdmin = await Admin.findOne({
+      where: { username: 'abhishekmatoria' },
+    });
+
+    if (!targetAdmin) {
+      await Admin.create({
+        username: 'abhishekmatoria',
+        password: 'fruitfulljaipur',
+        name: 'Abhishek Matoria',
+        role: 'admin',
+      });
+      console.log(`🛡️ Admin account created: 'abhishekmatoria'`);
+    } else {
+      targetAdmin.password = 'fruitfulljaipur';
+      targetAdmin.name = 'Abhishek Matoria';
+      await targetAdmin.save();
+      console.log(`🛡️ Admin credentials synchronized for: 'abhishekmatoria'`);
     }
   } catch (error) {
     console.error('❌ Error during database seeding:', error);
