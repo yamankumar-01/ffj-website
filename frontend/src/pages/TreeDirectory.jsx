@@ -52,7 +52,7 @@ export const TreeDirectory = () => {
       try {
         const params = new URLSearchParams();
         params.set('page', page);
-        params.set('limit', 12);
+        params.set('limit', 50);
         if (search.trim()) params.set('search', search.trim());
         if (category !== 'All') params.set('category', category);
         if (zone !== 'All') params.set('zone', zone);
@@ -269,8 +269,8 @@ export const TreeDirectory = () => {
           {/* Server-Side Pagination Controls */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-[#2d6a4f]/15">
             <div className="text-xs font-semibold text-gray-500">
-              Showing <strong className="text-[#1b4332]">{trees.length > 0 ? (page - 1) * 12 + 1 : 0}</strong> to{' '}
-              <strong className="text-[#1b4332]">{Math.min(page * 12, total)}</strong> of{' '}
+              Showing <strong className="text-[#1b4332]">{trees.length > 0 ? (page - 1) * 50 + 1 : 0}</strong> to{' '}
+              <strong className="text-[#1b4332]">{Math.min(page * 50, total)}</strong> of{' '}
               <strong className="text-[#1b4332]">{total}</strong> trees
             </div>
 

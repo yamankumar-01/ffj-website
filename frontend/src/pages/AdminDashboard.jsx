@@ -331,7 +331,7 @@ export const AdminDashboard = () => {
     setLoading(true);
     try {
       const [treesRes, statsRes] = await Promise.all([
-        api.get(`/trees?page=${page}&limit=10&search=${encodeURIComponent(search.trim())}`),
+        api.get(`/trees?page=${page}&limit=50&search=${encodeURIComponent(search.trim())}`),
         api.get('/trees/stats'),
       ]);
 
