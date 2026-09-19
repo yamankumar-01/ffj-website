@@ -71,7 +71,22 @@ export const getTrees = async (req, res) => {
       order,
     });
 
-    const formattedTrees = rows.map((tree) => tree.toFormattedJSON());
+    const prodHost = process.env.FRONTEND_URL || 'https://fruitfull-jaipur.vercel.app';
+    const formattedTrees = await Promise.all(
+      rows.map(async (tree) => {
+        if (!tree.qrTargetUrl || tree.qrTargetUrl.includes('localhost') || !tree.qrCodeData) {
+          const cleanUrl = `${prodHost.replace(/\/$/, '')}/tree/${tree.treeId}`;
+          tree.qrTargetUrl = cleanUrl;
+          try {
+            tree.qrCodeData = await generateQRCodeDataUrl(cleanUrl);
+            await tree.save();
+          } catch (e) {
+            console.error('Error auto-repairing tree QR:', e);
+          }
+        }
+        return tree.toFormattedJSON();
+      })
+    );
 
     res.json({
       success: true,
@@ -175,6 +190,18 @@ export const getTreeById = async (req, res) => {
 
     if (!tree) {
       return res.status(404).json({ success: false, message: `Tree not found for ID: ${treeId}` });
+    }
+
+    const prodHost = process.env.FRONTEND_URL || 'https://fruitfull-jaipur.vercel.app';
+    if (!tree.qrTargetUrl || tree.qrTargetUrl.includes('localhost') || !tree.qrCodeData) {
+      const cleanUrl = `${prodHost.replace(/\/$/, '')}/tree/${tree.treeId}`;
+      tree.qrTargetUrl = cleanUrl;
+      try {
+        tree.qrCodeData = await generateQRCodeDataUrl(cleanUrl);
+        await tree.save();
+      } catch (e) {
+        console.error('Error auto-repairing tree QR:', e);
+      }
     }
 
     res.json({ success: true, tree: tree.toFormattedJSON() });

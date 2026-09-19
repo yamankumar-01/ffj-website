@@ -1,8 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Leaf, Award, MapPin, Calendar, UserCheck, ShieldCheck, Download, Printer, Share2 } from 'lucide-react';
+import QRCode from 'qrcode';
 
 export const AadharCard = ({ tree, onDownloadQR, onShare }) => {
+  const [liveQr, setLiveQr] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (tree?.treeId) {
+      const target = `https://fruitfull-jaipur.vercel.app/tree/${tree.treeId}`;
+      QRCode.toDataURL(target, {
+        errorCorrectionLevel: 'H',
+        type: 'image/png',
+        margin: 2,
+        width: 350,
+        color: { dark: '#1b4332', light: '#ffffff' },
+      })
+        .then((url) => {
+          if (isMounted) setLiveQr(url);
+        })
+        .catch((err) => console.error(err));
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [tree?.treeId]);
+
   if (!tree) return null;
+
+  const activeQr = liveQr || tree.qrCodeData;
 
   const photo =
     tree.photos && tree.photos.length > 0
@@ -150,9 +176,9 @@ export const AadharCard = ({ tree, onDownloadQR, onShare }) => {
               {/* QR Code & Scan Callout */}
               <div className="flex items-center gap-4 pt-2 border-t border-[#2d6a4f]/10">
                 <div className="w-20 h-20 bg-white p-1 rounded-xl border border-[#52b788]/40 shadow-xs shrink-0 flex items-center justify-center">
-                  {tree.qrCodeData ? (
+                  {activeQr ? (
                     <img
-                      src={tree.qrCodeData}
+                      src={activeQr}
                       alt={`QR Code for ${tree.treeId}`}
                       className="w-full h-full object-contain"
                     />
@@ -191,9 +217,9 @@ export const AadharCard = ({ tree, onDownloadQR, onShare }) => {
       {/* Card Quick Action Bar (hidden in print) */}
       <div className="no-print mt-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          {tree.qrCodeData && (
+          {activeQr && (
             <a
-              href={tree.qrCodeData}
+              href={activeQr}
               download={`${tree.treeId}_${tree.commonName}_QR.png`}
               className="px-4 py-2 rounded-xl bg-white border border-[#2d6a4f]/20 hover:bg-[#d8f3dc] text-[#1b4332] text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-all"
             >
