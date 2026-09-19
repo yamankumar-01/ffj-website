@@ -25,6 +25,7 @@ import {
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { QRModal } from '../components/QRModal';
+import * as XLSX from 'xlsx';
 
 export const AdminDashboard = () => {
   const { isAuthenticated, loading: authLoading, logout } = useAuth();
@@ -127,81 +128,86 @@ export const AdminDashboard = () => {
     }
   };
 
-  const handleDownloadCSV = () => {
-    setDownloadingCSV(true);
+  const sampleTemplateData = [
+    {
+      treeId: '', // Optional: Auto-generated if left blank (e.g. FFJ-TREE-0011)
+      commonName: 'Mango',
+      scientificName: 'Mangifera indica',
+      localName: 'आम (Aam)',
+      category: 'Fruit',
+      zone: 'Block A - Central Lawn',
+      latitude: 26.78198,
+      longitude: 75.82251,
+      plantedDate: '2023-07-15',
+      plantedBy: 'Batch of 2023 - Environment Club',
+      healthStatus: 'Healthy',
+      height: 3.5,
+      girth: 42,
+      caretakerName: 'Ramesh Ji',
+      description: 'The King of Fruits, planted during Van Mahotsav.',
+      healthBenefits: 'High in Vitamin A and C, aids digestion and skin health.',
+      culturalSignificance: 'Sacred leaves used in traditional Indian toran and festive rituals.',
+      photos: 'https://res.cloudinary.com/dcn93ic66/image/upload/v1782473998/FFJ_dev/dqmtfhbt6sng7dnmsisv.jpg',
+    },
+    {
+      treeId: '',
+      commonName: 'Neem',
+      scientificName: 'Azadirachta indica',
+      localName: 'नीम (Neem)',
+      category: 'Medicinal',
+      zone: 'Ayurvedic Garden',
+      latitude: 26.78245,
+      longitude: 75.82210,
+      plantedDate: '2022-08-10',
+      plantedBy: 'JECRC Foundation Alumni',
+      healthStatus: 'Healthy',
+      height: 5.2,
+      girth: 68,
+      caretakerName: 'Green Team',
+      description: 'A revered medicinal tree renowned for air purification and natural antiseptic qualities.',
+      healthBenefits: 'Potent antimicrobial, supports blood purification and dental care.',
+      culturalSignificance: 'Considered sacred and a village dispensary in Indian tradition.',
+      photos: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800',
+    },
+  ];
+
+  const handleDownloadExcel = () => {
     try {
-      const headers = [
-        'treeId',
-        'commonName',
-        'scientificName',
-        'localName',
-        'category',
-        'zone',
-        'latitude',
-        'longitude',
-        'plantedDate',
-        'plantedBy',
-        'healthStatus',
-        'height',
-        'girth',
-        'caretakerName',
-        'description',
-        'healthBenefits',
-        'culturalSignificance',
-        'photos',
+      const worksheet = XLSX.utils.json_to_sheet(sampleTemplateData);
+      worksheet['!cols'] = [
+        { wch: 16 }, // treeId
+        { wch: 16 }, // commonName
+        { wch: 22 }, // scientificName
+        { wch: 16 }, // localName
+        { wch: 14 }, // category
+        { wch: 26 }, // zone
+        { wch: 12 }, // latitude
+        { wch: 12 }, // longitude
+        { wch: 14 }, // plantedDate
+        { wch: 32 }, // plantedBy
+        { wch: 14 }, // healthStatus
+        { wch: 10 }, // height
+        { wch: 10 }, // girth
+        { wch: 18 }, // caretakerName
+        { wch: 45 }, // description
+        { wch: 45 }, // healthBenefits
+        { wch: 45 }, // culturalSignificance
+        { wch: 55 }, // photos
       ];
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Tree Aadhar Template');
+      XLSX.writeFile(workbook, 'Tree_Aadhar_Import_Template.xlsx');
+    } catch (err) {
+      console.error('Error generating Excel template:', err);
+      alert('Failed to generate Excel file: ' + err.message);
+    }
+  };
 
-      const sampleRows = [
-        [
-          '',
-          'Mango',
-          'Mangifera indica',
-          'आम (Aam)',
-          'Fruit',
-          'Block A - Central Lawn',
-          '26.78198',
-          '75.82251',
-          '2023-07-15',
-          'Batch of 2023 - Environment Club',
-          'Healthy',
-          '3.5',
-          '42',
-          'Ramesh Ji',
-          'The King of Fruits, planted during Van Mahotsav.',
-          'High in Vitamin A and C, aids digestion and skin health.',
-          'Sacred leaves used in traditional Indian toran and festive rituals.',
-          'https://res.cloudinary.com/dcn93ic66/image/upload/v1782473998/FFJ_dev/dqmtfhbt6sng7dnmsisv.jpg',
-        ],
-        [
-          '',
-          'Neem',
-          'Azadirachta indica',
-          'नीम (Neem)',
-          'Medicinal',
-          'Ayurvedic Garden',
-          '26.78245',
-          '75.82210',
-          '2022-08-10',
-          'JECRC Foundation Alumni',
-          'Healthy',
-          '5.2',
-          '68',
-          'Green Team',
-          'A revered medicinal tree renowned for air purification and natural antiseptic qualities.',
-          'Potent antimicrobial, supports blood purification and dental care.',
-          'Considered sacred and a village dispensary in Indian tradition.',
-          'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800',
-        ],
-      ];
-
-      const csvContent =
-        '\uFEFF' + // UTF-8 BOM for Excel compatibility with Hindi characters
-        [
-          headers.join(','),
-          ...sampleRows.map((r) => r.map((val) => `"${String(val).replace(/"/g, '""')}"`).join(',')),
-        ].join('\n');
-
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const handleDownloadCSV = () => {
+    try {
+      const worksheet = XLSX.utils.json_to_sheet(sampleTemplateData);
+      const csv = XLSX.utils.sheet_to_csv(worksheet, { FS: ',', RS: '\r\n' });
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -213,8 +219,6 @@ export const AdminDashboard = () => {
     } catch (err) {
       console.error('Error downloading CSV:', err);
       alert('Failed to download template: ' + err.message);
-    } finally {
-      setDownloadingCSV(false);
     }
   };
 
@@ -434,10 +438,23 @@ export const AdminDashboard = () => {
     setImportLoading(true);
     setImportResult(null);
 
-    const data = new FormData();
-    data.append('csvFile', csvFile);
-
     try {
+      let uploadBlob = csvFile;
+
+      // Automatically convert Excel workbook (.xlsx / .xls) to CSV in memory before upload
+      const fileNameLower = csvFile.name.toLowerCase();
+      if (fileNameLower.endsWith('.xlsx') || fileNameLower.endsWith('.xls')) {
+        const buffer = await csvFile.arrayBuffer();
+        const workbook = XLSX.read(buffer, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const csvText = XLSX.utils.sheet_to_csv(worksheet, { FS: ',', RS: '\r\n' });
+        uploadBlob = new Blob(['\uFEFF' + csvText], { type: 'text/csv;charset=utf-8;' });
+      }
+
+      const data = new FormData();
+      data.append('csvFile', uploadBlob, 'trees_import.csv');
+
       const res = await api.post('/trees/bulk-import', data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -447,7 +464,7 @@ export const AdminDashboard = () => {
     } catch (err) {
       setImportResult({
         success: false,
-        message: err.response?.data?.message || 'Bulk CSV upload failed',
+        message: err.response?.data?.message || 'Spreadsheet import failed: ' + err.message,
       });
     } finally {
       setImportLoading(false);
@@ -748,41 +765,50 @@ export const AdminDashboard = () => {
             </div>
 
             {/* Step 1: Download Template */}
-            <div className="bg-[#f0f4f1] p-5 rounded-2xl border border-[#2d6a4f]/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="bg-[#f0f4f1] p-5 rounded-2xl border border-[#2d6a4f]/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div>
                 <h3 className="font-bold text-sm text-[#1b4332]">
-                  Step 1: Download Pre-Formatted CSV Template
+                  Step 1: Download Pre-Formatted Spreadsheet Template
                 </h3>
                 <p className="text-xs text-gray-600">
-                  Includes all botanical fields, headers, and 2 sample rows formatted for Excel.
+                  Includes all 18 botanical columns with sample trees. Choose Excel (.xlsx) for native spreadsheet editing or CSV (.csv).
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={handleDownloadCSV}
-                disabled={downloadingCSV}
-                className="py-2.5 px-4 rounded-xl bg-white border border-[#2d6a4f]/30 hover:bg-[#d8f3dc] text-[#1b4332] font-bold text-xs flex items-center gap-2 shadow-xs transition-colors shrink-0 disabled:opacity-50 cursor-pointer"
-              >
-                {downloadingCSV ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                <span>{downloadingCSV ? 'Downloading...' : 'Download Template (.csv)'}</span>
-              </button>
+              <div className="flex items-center gap-2.5 flex-wrap shrink-0">
+                <button
+                  type="button"
+                  onClick={handleDownloadExcel}
+                  className="py-2.5 px-4 rounded-xl bg-[#1b4332] hover:bg-[#2d6a4f] text-white font-bold text-xs flex items-center gap-2 shadow-xs transition-colors cursor-pointer"
+                >
+                  <FileSpreadsheet className="w-4 h-4 text-[#74c69d]" />
+                  <span>Download Excel (.xlsx)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDownloadCSV}
+                  className="py-2.5 px-3.5 rounded-xl bg-white border border-[#2d6a4f]/30 hover:bg-[#d8f3dc] text-[#1b4332] font-bold text-xs flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download CSV (.csv)</span>
+                </button>
+              </div>
             </div>
 
-            {/* Step 2: Upload CSV */}
+            {/* Step 2: Upload CSV / Excel */}
             <form onSubmit={handleCSVUpload} className="space-y-4">
               <div className="border-2 border-dashed border-[#2d6a4f]/30 rounded-3xl p-8 text-center hover:bg-gray-50 transition-colors">
                 <Upload className="w-10 h-10 text-[#2d6a4f] mx-auto mb-3" />
                 <label className="block text-sm font-bold text-[#1b4332] mb-1 cursor-pointer">
-                  <span>{csvFile ? csvFile.name : 'Select CSV file from your computer'}</span>
+                  <span>{csvFile ? csvFile.name : 'Select CSV or Excel (.xlsx) file from your computer'}</span>
                   <input
                     type="file"
-                    accept=".csv"
+                    accept=".csv, .xlsx, .xls"
                     onChange={(e) => setCsvFile(e.target.files[0])}
                     className="hidden"
                   />
                 </label>
                 <p className="text-xs text-gray-500">
-                  Supports .csv files up to 10MB
+                  Supports .xlsx, .xls, and .csv files up to 10MB
                 </p>
               </div>
 
