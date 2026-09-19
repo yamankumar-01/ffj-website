@@ -30,9 +30,9 @@ app.get(['/', '/health', '/api/health'], (req, res) => {
   });
 });
 
-// Mount Routes
-app.use('/api/trees', treeRoutes);
-app.use('/api/auth', authRoutes);
+// Mount Routes - support both /api/trees and /trees for resilient client routing
+app.use(['/api/trees', '/trees'], treeRoutes);
+app.use(['/api/auth', '/auth'], authRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {

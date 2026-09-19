@@ -1,13 +1,18 @@
 import axios from 'axios';
 
 const getBaseURL = () => {
-  if (import.meta.env.VITE_API_BASE_URL) {
-    return import.meta.env.VITE_API_BASE_URL;
+  let url = import.meta.env.VITE_API_BASE_URL;
+  if (url) {
+    url = url.trim().replace(/\/+$/, '');
+    if (!url.endsWith('/api')) {
+      url = `${url}/api`;
+    }
+    return url;
   }
   if (import.meta.env.DEV) {
     return '/api';
   }
-  return 'https://ffj-tree-aadhar-backend.onrender.com/api';
+  return 'https://ffj-website-1.onrender.com/api';
 };
 
 const api = axios.create({
