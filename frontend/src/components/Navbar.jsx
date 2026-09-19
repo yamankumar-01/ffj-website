@@ -12,27 +12,27 @@ export const Navbar = ({ onOpenScanner }) => {
 
   return (
     <nav className="sticky top-0 z-40 bg-[#f7f5ee]/90 backdrop-blur-md border-b border-[#2d6a4f]/15 shadow-sm transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16 sm:h-20">
           
           {/* Brand Logo & Title */}
-          <Link to="/" className="flex items-center gap-3.5 group">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#1b4332] to-[#2d6a4f] p-0.5 shadow-md flex items-center justify-center transform group-hover:scale-105 transition-transform">
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 group min-w-0 pr-1">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-[#1b4332] to-[#2d6a4f] p-0.5 shadow-sm flex items-center justify-center transform group-hover:scale-105 transition-transform shrink-0">
               <div className="w-full h-full rounded-full bg-[#f7f5ee] flex items-center justify-center overflow-hidden border border-[#52b788]/30">
-                <Leaf className="w-6 h-6 text-[#1b4332] group-hover:rotate-12 transition-transform duration-300" />
+                <Leaf className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-[#1b4332] group-hover:rotate-12 transition-transform duration-300" />
               </div>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-display font-extrabold text-xl text-[#1b4332] tracking-tight">
+            <div className="min-w-0 flex flex-col justify-center">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="font-display font-extrabold text-base sm:text-xl text-[#1b4332] tracking-tight whitespace-nowrap leading-tight">
                   Fruitfull Jaipur
                 </span>
-                <span className="bg-[#1b4332] text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-xs">
+                <span className="bg-[#1b4332] text-[#d8f3dc] text-[8px] sm:text-[10px] font-bold uppercase tracking-wider px-1.5 sm:px-2 py-0.5 rounded-full shadow-xs shrink-0 leading-none">
                   Tree Aadhar
                 </span>
               </div>
-              <p className="text-xs text-[#2d6a4f] font-medium tracking-wide">
-                Digital Identity • JECRC Foundation
+              <p className="text-[10px] sm:text-xs text-[#2d6a4f] font-medium tracking-normal sm:tracking-wide truncate leading-tight mt-0.5">
+                Digital Identity • JECRC
               </p>
             </div>
           </Link>
