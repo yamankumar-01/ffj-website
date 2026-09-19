@@ -15,18 +15,20 @@ export const TreeCard = ({ tree, onPreviewQR }) => {
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden border border-[#2d6a4f]/15 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group hover:-translate-y-1">
-      {/* Top Image & Overlays */}
-      <div className="relative h-52 w-full overflow-hidden bg-[#e8f0ec]">
-        <img
-          src={photo}
-          alt={tree.commonName}
-          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+      {/* Top Image & Overlays (Vertically Long Portrait) */}
+      <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#e8f0ec]">
+        <Link to={`/tree/${tree.treeId}`} className="block w-full h-full">
+          <img
+            src={photo}
+            alt={tree.commonName}
+            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none" />
+        </Link>
 
         {/* Top Badges */}
-        <div className="absolute top-3 left-3 flex items-center gap-2">
+        <div className="absolute top-3 left-3 flex items-center gap-2 z-10 pointer-events-none">
           {/* Tree Aadhar Chip */}
           <span className="bg-[#1b4332]/90 backdrop-blur-md text-white text-[11px] font-mono font-bold tracking-wider px-2.5 py-1 rounded-md shadow-xs border border-white/20">
             {tree.treeId}
@@ -38,7 +40,7 @@ export const TreeCard = ({ tree, onPreviewQR }) => {
         </div>
 
         {/* Health Status Pill */}
-        <div className="absolute top-3 right-3">
+        <div className="absolute top-3 right-3 z-10 pointer-events-none">
           <span
             className={`text-[11px] font-medium px-2 py-0.5 rounded-full border shadow-xs flex items-center gap-1 ${healthBadgeColor}`}
           >
@@ -59,7 +61,7 @@ export const TreeCard = ({ tree, onPreviewQR }) => {
               e.stopPropagation();
               onPreviewQR(tree);
             }}
-            className="absolute bottom-3 right-3 p-2 rounded-xl bg-white/95 text-[#1b4332] hover:bg-[#1b4332] hover:text-white shadow-md transition-all duration-200 cursor-pointer"
+            className="absolute bottom-3 right-3 z-10 p-2 rounded-xl bg-white/95 text-[#1b4332] hover:bg-[#1b4332] hover:text-white shadow-md transition-all duration-200 cursor-pointer"
             title="Preview QR Code"
           >
             <QrCode className="w-4 h-4" />
@@ -67,7 +69,7 @@ export const TreeCard = ({ tree, onPreviewQR }) => {
         )}
 
         {/* Bottom Image Label */}
-        <div className="absolute bottom-3 left-3 text-white">
+        <div className="absolute bottom-3 left-3 z-10 pointer-events-none text-white">
           <p className="text-xs text-[#d8f3dc] font-medium drop-shadow-sm">
             {tree.location?.zone || 'Campus'}
           </p>
