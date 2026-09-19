@@ -162,5 +162,12 @@ Tree.prototype.toFormattedJSON = function () {
     latitude: this.latitude,
     longitude: this.longitude,
   };
+
+  // Canonical production URL for QR scans
+  const prodHost = process.env.FRONTEND_URL || 'https://fruitfull-jaipur.vercel.app';
+  if (!json.qrTargetUrl || json.qrTargetUrl.includes('localhost')) {
+    json.qrTargetUrl = `${prodHost.replace(/\/$/, '')}/tree/${this.treeId}`;
+  }
+
   return json;
 };

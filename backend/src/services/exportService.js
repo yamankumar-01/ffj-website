@@ -16,7 +16,11 @@ export const createTreesQRZip = async (trees, res) => {
 
   for (const tree of trees) {
     try {
-      const qrBuffer = await generateQRCodeBuffer(tree.qrTargetUrl || `http://localhost:5173/tree/${tree.treeId}`);
+      const defaultHost = process.env.FRONTEND_URL || 'https://fruitfull-jaipur.vercel.app';
+      const targetUrl = (tree.qrTargetUrl && !tree.qrTargetUrl.includes('localhost'))
+        ? tree.qrTargetUrl
+        : `${defaultHost.replace(/\/$/, '')}/tree/${tree.treeId}`;
+      const qrBuffer = await generateQRCodeBuffer(targetUrl);
       const cleanName = (tree.commonName || 'Tree').replace(/[^a-zA-Z0-9_-]/g, '_');
       const filename = `${tree.treeId}_${cleanName}_QR.png`;
       archive.append(qrBuffer, { name: filename });
@@ -113,7 +117,11 @@ export const createPrintablePlaquesPDF = async (trees, res) => {
 
     // Generate QR Buffer for this tree
     try {
-      const qrBuffer = await generateQRCodeBuffer(tree.qrTargetUrl || `http://localhost:5173/tree/${tree.treeId}`);
+      const defaultHost = process.env.FRONTEND_URL || 'https://fruitfull-jaipur.vercel.app';
+      const targetUrl = (tree.qrTargetUrl && !tree.qrTargetUrl.includes('localhost'))
+        ? tree.qrTargetUrl
+        : `${defaultHost.replace(/\/$/, '')}/tree/${tree.treeId}`;
+      const qrBuffer = await generateQRCodeBuffer(targetUrl);
       
       // QR Box on the right
       const qrSize = 135;

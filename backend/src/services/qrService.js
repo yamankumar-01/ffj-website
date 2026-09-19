@@ -3,7 +3,7 @@ import { Op } from 'sequelize';
 import { Tree } from '../models/Tree.js';
 
 export const getBaseTreeUrl = (treeId) => {
-  const host = process.env.FRONTEND_URL || 'http://localhost:5173';
+  const host = process.env.FRONTEND_URL || 'https://fruitfull-jaipur.vercel.app';
   return `${host.replace(/\/$/, '')}/tree/${treeId}`;
 };
 

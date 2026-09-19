@@ -1,3 +1,4 @@
+import { Op } from 'sequelize';
 import { Tree } from '../models/Tree.js';
 import { Admin } from '../models/Admin.js';
 import { initialTrees } from './seedData.js';
@@ -5,9 +6,30 @@ import { generateQRCodeDataUrl, getBaseTreeUrl } from '../services/qrService.js'
 
 export const seedDatabase = async () => {
   try {
+    // Auto-migrate any existing records that contain 'localhost' to canonical production URL
+    const prodHost = process.env.FRONTEND_URL || 'https://fruitfull-jaipur.vercel.app';
+    const localhostTrees = await Tree.findAll({
+      where: {
+        [Op.or]: [
+          { qrTargetUrl: { [Op.like]: '%localhost%' } },
+          { qrTargetUrl: null },
+        ],
+      },
+    });
+
+    if (localhostTrees && localhostTrees.length > 0) {
+      console.log(`🔄 Upgrading ${localhostTrees.length} trees from localhost to ${prodHost}...`);
+      for (const t of localhostTrees) {
+        const cleanUrl = `${prodHost.replace(/\/$/, '')}/tree/${t.treeId}`;
+        const newQr = await generateQRCodeDataUrl(cleanUrl);
+        await t.update({ qrTargetUrl: cleanUrl, qrCodeData: newQr });
+      }
+      console.log('✅ All tree QR codes and target URLs upgraded to production URL successfully.');
+    }
+
     const existingCount = await Tree.count();
     if (existingCount > 0) {
-      console.log(`🌿 Database already contains ${existingCount} trees. Skipping auto-seeding.`);
+      console.log(`🌿 Database already contains ${existingCount} trees.`);
     } else {
       console.log('🌱 Seeding initial 10 botanical trees with dynamic QR codes...');
       

@@ -1,12 +1,51 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Download, ExternalLink, Copy, Check, Printer } from 'lucide-react';
+import QRCode from 'qrcode';
 
 export const QRModal = ({ tree, onClose }) => {
-  const [copied, setCopied] = React.useState(false);
+  const [copied, setCopied] = useState(false);
+  const [dynamicQrData, setDynamicQrData] = useState(null);
 
   if (!tree) return null;
 
-  const targetUrl = tree.qrTargetUrl || `${window.location.origin}/tree/${tree.treeId}`;
+  // Resolve canonical target URL (Never show or encode localhost)
+  const getTargetUrl = () => {
+    if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.hostname !== '') {
+      return `${window.location.origin}/tree/${tree.treeId}`;
+    }
+    if (tree.qrTargetUrl && !tree.qrTargetUrl.includes('localhost')) {
+      return tree.qrTargetUrl;
+    }
+    return `https://fruitfull-jaipur.vercel.app/tree/${tree.treeId}`;
+  };
+
+  const targetUrl = getTargetUrl();
+
+  useEffect(() => {
+    let isMounted = true;
+    QRCode.toDataURL(targetUrl, {
+      errorCorrectionLevel: 'H',
+      type: 'image/png',
+      margin: 2,
+      width: 400,
+      color: {
+        dark: '#1b4332',
+        light: '#ffffff',
+      },
+    })
+      .then((url) => {
+        if (isMounted) setDynamicQrData(url);
+      })
+      .catch((err) => {
+        console.error('Error generating client QR:', err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [targetUrl]);
+
+  const activeQrCode = dynamicQrData || tree.qrCodeData;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(targetUrl);
@@ -97,7 +136,7 @@ export const QRModal = ({ tree, onClose }) => {
             <div class="header">FRUITFULL JAIPUR • JECRC</div>
             <div class="sub">Tree Aadhar Digital Identity</div>
             <div class="id-pill">${tree.treeId}</div>
-            <img src="${tree.qrCodeData}" class="qr-img" />
+            <img src="${activeQrCode || tree.qrCodeData}" class="qr-img" />
             <div class="name">${tree.commonName}</div>
             <div class="local">${tree.localName || ''}</div>
             <div class="sci">${tree.scientificName}</div>
@@ -138,15 +177,15 @@ export const QRModal = ({ tree, onClose }) => {
 
         {/* QR Code Container */}
         <div className="bg-[#f7f5ee] p-5 rounded-2xl border-2 border-dashed border-[#52b788]/50 flex flex-col items-center justify-center my-4">
-          {tree.qrCodeData ? (
+          {activeQrCode ? (
             <img
-              src={tree.qrCodeData}
+              src={activeQrCode}
               alt={`QR Code for ${tree.treeId}`}
               className="w-52 h-52 object-contain bg-white p-2 rounded-xl shadow-xs"
             />
           ) : (
             <div className="w-52 h-52 bg-white flex items-center justify-center text-sm text-gray-400">
-              No QR data available
+              Generating verified QR...
             </div>
           )}
           <p className="text-[11px] text-[#2d6a4f] font-medium mt-3 text-center">
@@ -170,9 +209,9 @@ export const QRModal = ({ tree, onClose }) => {
 
         {/* Action Buttons */}
         <div className="grid grid-cols-2 gap-2.5">
-          {tree.qrCodeData && (
+          {activeQrCode && (
             <a
-              href={tree.qrCodeData}
+              href={activeQrCode}
               download={`${tree.treeId}_${tree.commonName}_QR.png`}
               className="py-2.5 px-3 rounded-xl bg-[#1b4332] hover:bg-[#2d6a4f] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
             >
