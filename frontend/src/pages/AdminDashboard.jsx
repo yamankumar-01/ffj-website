@@ -20,6 +20,7 @@ import {
   Printer,
   ChevronLeft,
   ChevronRight,
+  Loader2,
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -52,6 +53,113 @@ export const AdminDashboard = () => {
   // Photo Upload States
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [urlInput, setUrlInput] = useState('');
+
+  // Export Download States
+  const [downloadingPDF, setDownloadingPDF] = useState(false);
+  const [downloadingZIP, setDownloadingZIP] = useState(false);
+  const [downloadingCSV, setDownloadingCSV] = useState(false);
+
+  const handleDownloadPDF = async () => {
+    setDownloadingPDF(true);
+    try {
+      const response = await api.get('/trees/export/pdf', {
+        responseType: 'blob',
+        timeout: 90000,
+      });
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'FFJ_Tree_Aadhar_Plaques.pdf');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Error downloading PDF:', err);
+      let errorMsg = err.message;
+      if (err.response?.data instanceof Blob) {
+        try {
+          const text = await err.response.data.text();
+          const json = JSON.parse(text);
+          errorMsg = json.message || text;
+        } catch (_) {}
+      } else if (err.response?.data?.message) {
+        errorMsg = err.response.data.message;
+      }
+      alert('Failed to generate PDF: ' + errorMsg);
+    } finally {
+      setDownloadingPDF(false);
+    }
+  };
+
+  const handleDownloadZIP = async () => {
+    setDownloadingZIP(true);
+    try {
+      const response = await api.get('/trees/export/zip', {
+        responseType: 'blob',
+        timeout: 120000,
+      });
+      const blob = new Blob([response.data], { type: 'application/zip' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'FFJ_Tree_Aadhar_QRCodes.zip');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Error downloading ZIP:', err);
+      let errorMsg = err.message;
+      if (err.response?.data instanceof Blob) {
+        try {
+          const text = await err.response.data.text();
+          const json = JSON.parse(text);
+          errorMsg = json.message || text;
+        } catch (_) {}
+      } else if (err.response?.data?.message) {
+        errorMsg = err.response.data.message;
+      }
+      alert('Failed to download ZIP: ' + errorMsg);
+    } finally {
+      setDownloadingZIP(false);
+    }
+  };
+
+  const handleDownloadCSV = async () => {
+    setDownloadingCSV(true);
+    try {
+      const response = await api.get('/trees/template/csv', {
+        responseType: 'blob',
+        timeout: 30000,
+      });
+      const blob = new Blob([response.data], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'Tree_Aadhar_Import_Template.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Error downloading CSV:', err);
+      let errorMsg = err.message;
+      if (err.response?.data instanceof Blob) {
+        try {
+          const text = await err.response.data.text();
+          const json = JSON.parse(text);
+          errorMsg = json.message || text;
+        } catch (_) {}
+      } else if (err.response?.data?.message) {
+        errorMsg = err.response.data.message;
+      }
+      alert('Failed to download template: ' + errorMsg);
+    } finally {
+      setDownloadingCSV(false);
+    }
+  };
 
   // Compress and resize image file to lightweight, high-res data URL
   const compressImageFile = (file) => {
@@ -592,14 +700,15 @@ export const AdminDashboard = () => {
                   Includes all botanical fields, headers, and 2 sample rows formatted for Excel.
                 </p>
               </div>
-              <a
-                href="/api/trees/template/csv"
-                download="Tree_Aadhar_Import_Template.csv"
-                className="py-2.5 px-4 rounded-xl bg-white border border-[#2d6a4f]/30 hover:bg-[#d8f3dc] text-[#1b4332] font-bold text-xs flex items-center gap-2 shadow-xs transition-colors shrink-0"
+              <button
+                type="button"
+                onClick={handleDownloadCSV}
+                disabled={downloadingCSV}
+                className="py-2.5 px-4 rounded-xl bg-white border border-[#2d6a4f]/30 hover:bg-[#d8f3dc] text-[#1b4332] font-bold text-xs flex items-center gap-2 shadow-xs transition-colors shrink-0 disabled:opacity-50 cursor-pointer"
               >
-                <Download className="w-4 h-4" />
-                <span>Download Template (.csv)</span>
-              </a>
+                {downloadingCSV ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                <span>{downloadingCSV ? 'Downloading...' : 'Download Template (.csv)'}</span>
+              </button>
             </div>
 
             {/* Step 2: Upload CSV */}
@@ -700,14 +809,15 @@ export const AdminDashboard = () => {
                     Includes FFJ branding, species names in Hindi & English, campus zone, and scannable QR.
                   </p>
                 </div>
-                <a
-                  href="/api/trees/export/pdf"
-                  target="_blank"
-                  className="w-full py-3 px-4 rounded-xl bg-[#1b4332] hover:bg-[#2d6a4f] text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-xs"
+                <button
+                  type="button"
+                  onClick={handleDownloadPDF}
+                  disabled={downloadingPDF}
+                  className="w-full py-3 px-4 rounded-xl bg-[#1b4332] hover:bg-[#2d6a4f] text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
                 >
-                  <Printer className="w-4 h-4" />
-                  <span>Download Plaque PDF</span>
-                </a>
+                  {downloadingPDF ? <Loader2 className="w-4 h-4 animate-spin" /> : <Printer className="w-4 h-4" />}
+                  <span>{downloadingPDF ? 'Generating Plaque PDF...' : 'Download Plaque PDF'}</span>
+                </button>
               </div>
 
               {/* Option 2: High-Res PNGs in ZIP Archive */}
@@ -724,13 +834,15 @@ export const AdminDashboard = () => {
                     (e.g., <code className="text-[10px] bg-gray-200 px-1 py-0.5 rounded">FFJ-TREE-0001_Mango_QR.png</code>) + an inventory manifest for signage fabrication.
                   </p>
                 </div>
-                <a
-                  href="/api/trees/export/zip"
-                  className="w-full py-3 px-4 rounded-xl bg-[#2d6a4f] hover:bg-[#1b4332] text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-xs"
+                <button
+                  type="button"
+                  onClick={handleDownloadZIP}
+                  disabled={downloadingZIP}
+                  className="w-full py-3 px-4 rounded-xl bg-[#2d6a4f] hover:bg-[#1b4332] text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
                 >
-                  <Download className="w-4 h-4" />
-                  <span>Download ZIP Archive</span>
-                </a>
+                  {downloadingZIP ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                  <span>{downloadingZIP ? 'Packing QR ZIP...' : 'Download ZIP Archive'}</span>
+                </button>
               </div>
 
             </div>
