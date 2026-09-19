@@ -84,10 +84,10 @@ export const Home = ({ onOpenScanner }) => {
               </p>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2">
                 <Link
                   to="/trees"
-                  className="px-6 py-3.5 rounded-2xl bg-[#1b4332] hover:bg-[#2d6a4f] text-white font-bold text-sm sm:text-base shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 transform hover:-translate-y-0.5"
+                  className="px-6 py-3.5 rounded-2xl bg-[#1b4332] hover:bg-[#2d6a4f] active:scale-95 text-white font-bold text-sm sm:text-base shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 transform hover:-translate-y-0.5 tap-active"
                 >
                   <Trees className="w-5 h-5 text-[#74c69d]" />
                   <span>Explore All Trees</span>
@@ -96,7 +96,7 @@ export const Home = ({ onOpenScanner }) => {
 
                 <button
                   onClick={onOpenScanner}
-                  className="px-6 py-3.5 rounded-2xl bg-white hover:bg-[#d8f3dc] text-[#1b4332] font-bold text-sm sm:text-base border border-[#2d6a4f]/25 shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2 cursor-pointer transform hover:-translate-y-0.5"
+                  className="px-6 py-3.5 rounded-2xl bg-white hover:bg-[#d8f3dc] active:scale-95 text-[#1b4332] font-bold text-sm sm:text-base border border-[#2d6a4f]/25 shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer transform hover:-translate-y-0.5 tap-active"
                 >
                   <QrCode className="w-5 h-5 text-[#1b4332]" />
                   <span>Scan / Lookup Aadhar</span>
@@ -104,7 +104,7 @@ export const Home = ({ onOpenScanner }) => {
               </div>
 
               {/* Micro Proofpoints */}
-              <div className="flex flex-wrap items-center gap-6 pt-4 text-xs font-semibold text-[#2d6a4f]">
+              <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-4 text-xs font-semibold text-[#2d6a4f]">
                 <span className="flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4 text-[#52b788]" /> No Hardcoded Pages
                 </span>
@@ -120,7 +120,7 @@ export const Home = ({ onOpenScanner }) => {
 
             {/* Right Column: Hero Graphic / Interactive Aadhar Preview Card */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="relative w-full max-w-md">
+              <div className="relative w-full max-w-md animate-float">
                 {/* Decorative layered glow */}
                 <div className="absolute -inset-1.5 bg-gradient-to-r from-[#52b788] to-[#c2410c] rounded-3xl blur-md opacity-30 animate-pulse" />
                 
@@ -297,7 +297,7 @@ export const Home = ({ onOpenScanner }) => {
         </div>
 
         {/* Trees Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {featuredTrees.map((tree) => (
             <TreeCard
               key={tree._id || tree.treeId}

@@ -106,17 +106,21 @@ export const Navbar = ({ onOpenScanner }) => {
           <div className="flex md:hidden items-center gap-2">
             <button
               onClick={onOpenScanner}
-              className="p-2 rounded-lg bg-[#d8f3dc] text-[#1b4332] border border-[#52b788]/30"
+              className="p-2 rounded-xl bg-[#d8f3dc] text-[#1b4332] border border-[#52b788]/30 active:scale-90 transition-transform tap-active"
               title="Lookup tree"
             >
               <QrCode className="w-5 h-5" />
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-[#1b4332] hover:bg-[#2d6a4f]/10"
+              className="p-2 rounded-xl text-[#1b4332] hover:bg-[#2d6a4f]/10 active:scale-90 transition-all tap-active"
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6 rotate-90 transition-transform duration-200" />
+              ) : (
+                <Menu className="w-6 h-6 transition-transform duration-200" />
+              )}
             </button>
           </div>
 
@@ -125,12 +129,12 @@ export const Navbar = ({ onOpenScanner }) => {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#f7f5ee] border-b border-[#2d6a4f]/20 px-4 pt-3 pb-5 space-y-2 shadow-lg animate-in slide-in-from-top-2">
+        <div className="md:hidden bg-[#f7f5ee]/98 backdrop-blur-md border-b border-[#2d6a4f]/20 px-4 pt-3 pb-5 space-y-2 shadow-lg animate-fade-in-up">
           <Link
             to="/"
             onClick={() => setMobileMenuOpen(false)}
-            className={`block px-3 py-2.5 rounded-lg font-semibold text-sm ${
-              isActive('/') ? 'bg-[#1b4332] text-white' : 'text-[#1b4332]'
+            className={`block px-3.5 py-2.5 rounded-xl font-semibold text-sm transition-all tap-active active:scale-[0.98] ${
+              isActive('/') ? 'bg-[#1b4332] text-white shadow-xs' : 'text-[#1b4332] hover:bg-[#2d6a4f]/10'
             }`}
           >
             Home
@@ -138,8 +142,8 @@ export const Navbar = ({ onOpenScanner }) => {
           <Link
             to="/trees"
             onClick={() => setMobileMenuOpen(false)}
-            className={`block px-3 py-2.5 rounded-lg font-semibold text-sm ${
-              isActive('/trees') ? 'bg-[#1b4332] text-white' : 'text-[#1b4332]'
+            className={`block px-3.5 py-2.5 rounded-xl font-semibold text-sm transition-all tap-active active:scale-[0.98] ${
+              isActive('/trees') ? 'bg-[#1b4332] text-white shadow-xs' : 'text-[#1b4332] hover:bg-[#2d6a4f]/10'
             }`}
           >
             All Trees (Directory)
@@ -149,9 +153,9 @@ export const Navbar = ({ onOpenScanner }) => {
               setMobileMenuOpen(false);
               onOpenScanner();
             }}
-            className="w-full text-left px-3 py-2.5 rounded-lg font-semibold text-sm text-[#1b4332] bg-[#d8f3dc] flex items-center gap-2"
+            className="w-full text-left px-3.5 py-2.5 rounded-xl font-semibold text-sm text-[#1b4332] bg-[#d8f3dc] hover:bg-[#bbf7d0] transition-all flex items-center gap-2 tap-active active:scale-[0.98] shadow-xs cursor-pointer"
           >
-            <QrCode className="w-4 h-4" />
+            <QrCode className="w-4 h-4 text-[#1b4332]" />
             Scan / Search Tree Aadhar
           </button>
           <div className="pt-2 border-t border-[#2d6a4f]/10">
@@ -160,7 +164,7 @@ export const Navbar = ({ onOpenScanner }) => {
                 <Link
                   to="/admin"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-3 py-2.5 rounded-lg font-semibold text-sm bg-[#2d6a4f] text-white"
+                  className="block px-3.5 py-2.5 rounded-xl font-semibold text-sm bg-[#2d6a4f] text-white tap-active active:scale-[0.98] shadow-xs"
                 >
                   Admin Dashboard ({user?.name || 'Admin'})
                 </Link>
@@ -169,7 +173,7 @@ export const Navbar = ({ onOpenScanner }) => {
                     logout();
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full text-left px-3 py-2 rounded-lg font-semibold text-sm text-[#c2410c]"
+                  className="w-full text-left px-3.5 py-2 rounded-xl font-semibold text-sm text-[#c2410c] hover:bg-[#c2410c]/10 tap-active"
                 >
                   Logout
                 </button>
@@ -178,7 +182,7 @@ export const Navbar = ({ onOpenScanner }) => {
               <Link
                 to="/admin/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2.5 rounded-lg font-semibold text-sm border border-[#1b4332] text-[#1b4332] text-center"
+                className="block px-3.5 py-2.5 rounded-xl font-semibold text-sm border border-[#1b4332] text-[#1b4332] text-center hover:bg-[#1b4332] hover:text-white transition-all tap-active active:scale-[0.98]"
               >
                 Login as Admin
               </Link>

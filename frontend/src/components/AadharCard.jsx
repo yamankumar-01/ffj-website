@@ -42,25 +42,25 @@ export const AadharCard = ({ tree, onDownloadQR, onShare }) => {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto aadhar-card-container">
+    <div className="w-full max-w-3xl mx-auto aadhar-card-container animate-fade-in">
       {/* The Physical / Digital Identity Card */}
-      <div className="relative bg-[#fcfbf7] rounded-3xl overflow-hidden border-2 border-[#1b4332] shadow-aadhar transition-all duration-300">
+      <div className="relative bg-[#fcfbf7] rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-[#1b4332] shadow-aadhar transition-all duration-300">
         
         {/* Top Official Security Band */}
-        <div className="bg-gradient-to-r from-[#1b4332] via-[#2d6a4f] to-[#1b4332] text-white px-6 py-4 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-[#1b4332] via-[#2d6a4f] to-[#1b4332] text-white px-4 sm:px-6 py-3 sm:py-4 relative overflow-hidden">
           {/* Subtle Guilloche / security texture overlay */}
           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:8px_8px]" />
           
-          <div className="relative z-10 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-full bg-[#d8f3dc] border-2 border-white/50 flex items-center justify-center text-[#1b4332] shadow-sm">
-                <Leaf className="w-6 h-6 fill-current" />
+          <div className="relative z-10 flex flex-wrap items-center justify-between gap-2.5 sm:gap-3">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#d8f3dc] border-2 border-white/50 flex items-center justify-center text-[#1b4332] shadow-sm shrink-0">
+                <Leaf className="w-5 h-5 sm:w-6 sm:h-6 fill-current" />
               </div>
               <div>
-                <h2 className="font-display font-black text-lg md:text-xl tracking-tight text-white uppercase">
+                <h2 className="font-display font-black text-base sm:text-lg md:text-xl tracking-tight text-white uppercase leading-tight">
                   Fruitfull Jaipur  •  JECRC Foundation
                 </h2>
-                <p className="text-[11px] font-medium tracking-widest text-[#74c69d] uppercase">
+                <p className="text-[10px] sm:text-[11px] font-medium tracking-widest text-[#74c69d] uppercase mt-0.5">
                   Digital Tree Identity Card  •  वृक्ष आधार प्रमाण पत्र
                 </p>
               </div>
@@ -78,7 +78,7 @@ export const AadharCard = ({ tree, onDownloadQR, onShare }) => {
         <div className="h-1.5 aadhar-security-strip border-y border-[#52b788]/40" />
 
         {/* Card Body */}
-        <div className="p-6 md:p-8">
+        <div className="p-4 sm:p-6 md:p-8">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
             
             {/* Left Photo & Badges (5 cols) */}
@@ -215,13 +215,13 @@ export const AadharCard = ({ tree, onDownloadQR, onShare }) => {
       </div>
 
       {/* Card Quick Action Bar (hidden in print) */}
-      <div className="no-print mt-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
+      <div className="no-print mt-4 flex flex-wrap items-center justify-between gap-2.5 sm:gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           {activeQr && (
             <a
               href={activeQr}
               download={`${tree.treeId}_${tree.commonName}_QR.png`}
-              className="px-4 py-2 rounded-xl bg-white border border-[#2d6a4f]/20 hover:bg-[#d8f3dc] text-[#1b4332] text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-all"
+              className="px-3.5 sm:px-4 py-2 rounded-xl bg-white border border-[#2d6a4f]/20 hover:bg-[#d8f3dc] text-[#1b4332] text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-all tap-active active:scale-95"
             >
               <Download className="w-3.5 h-3.5" />
               Download QR Plaque (PNG)
@@ -229,7 +229,7 @@ export const AadharCard = ({ tree, onDownloadQR, onShare }) => {
           )}
           <button
             onClick={handlePrint}
-            className="px-4 py-2 rounded-xl bg-white border border-[#2d6a4f]/20 hover:bg-[#d8f3dc] text-[#1b4332] text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+            className="px-3.5 sm:px-4 py-2 rounded-xl bg-white border border-[#2d6a4f]/20 hover:bg-[#d8f3dc] text-[#1b4332] text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-all cursor-pointer tap-active active:scale-95"
           >
             <Printer className="w-3.5 h-3.5" />
             Print ID Plaque
@@ -239,7 +239,7 @@ export const AadharCard = ({ tree, onDownloadQR, onShare }) => {
         {onShare && (
           <button
             onClick={onShare}
-            className="px-4 py-2 rounded-xl bg-[#1b4332] hover:bg-[#2d6a4f] text-white text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+            className="px-3.5 sm:px-4 py-2 rounded-xl bg-[#1b4332] hover:bg-[#2d6a4f] text-white text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-all cursor-pointer tap-active active:scale-95"
           >
             <Share2 className="w-3.5 h-3.5" />
             Share Tree Aadhar

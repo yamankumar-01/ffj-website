@@ -546,39 +546,39 @@ export const AdminDashboard = () => {
       {/* Dashboard Tabs */}
       <div className="bg-white rounded-3xl border border-[#2d6a4f]/15 shadow-lg overflow-hidden">
         
-        {/* Tab Headers */}
-        <div className="flex border-b border-gray-200 bg-[#f7f5ee]/50 p-2 gap-2">
+        {/* Tab Headers (Touch scrollable on mobile) */}
+        <div className="flex border-b border-gray-200 bg-[#f7f5ee]/50 p-2 gap-2 overflow-x-auto scrollbar-none">
           <button
             onClick={() => setActiveTab('inventory')}
-            className={`py-2.5 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`py-2 px-3 sm:py-2.5 sm:px-4 rounded-xl text-xs font-bold transition-all shrink-0 whitespace-nowrap cursor-pointer tap-active active:scale-95 ${
               activeTab === 'inventory'
                 ? 'bg-white text-[#1b4332] shadow-xs'
                 : 'text-gray-600 hover:text-[#1b4332]'
             }`}
           >
-            🌳 Tree Inventory & Plaque Generator
+            🌳 Tree Inventory & Plaques
           </button>
           <button
             onClick={() => setActiveTab('import')}
-            className={`py-2.5 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`py-2 px-3 sm:py-2.5 sm:px-4 rounded-xl text-xs font-bold transition-all shrink-0 whitespace-nowrap cursor-pointer flex items-center gap-1.5 tap-active active:scale-95 ${
               activeTab === 'import'
                 ? 'bg-white text-[#1b4332] shadow-xs'
                 : 'text-gray-600 hover:text-[#1b4332]'
             }`}
           >
             <FileSpreadsheet className="w-4 h-4 text-[#2d6a4f]" />
-            <span>CSV Bulk Onboarding (250+ Trees)</span>
+            <span>Excel / CSV Import</span>
           </button>
           <button
             onClick={() => setActiveTab('export')}
-            className={`py-2.5 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`py-2 px-3 sm:py-2.5 sm:px-4 rounded-xl text-xs font-bold transition-all shrink-0 whitespace-nowrap cursor-pointer flex items-center gap-1.5 tap-active active:scale-95 ${
               activeTab === 'export'
                 ? 'bg-white text-[#1b4332] shadow-xs'
                 : 'text-gray-600 hover:text-[#1b4332]'
             }`}
           >
             <Archive className="w-4 h-4 text-[#2d6a4f]" />
-            <span>Printable QR & Plaque Exporter</span>
+            <span>Printable Plaques & ZIP</span>
           </button>
         </div>
 
@@ -936,8 +936,8 @@ export const AdminDashboard = () => {
 
       {/* Add / Edit Tree Modal */}
       {isFormModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-[#2d6a4f]/20 relative my-8">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs overflow-y-auto animate-fade-in">
+          <div className="bg-white rounded-2xl sm:rounded-3xl max-w-2xl w-full p-4 sm:p-8 shadow-2xl border border-[#2d6a4f]/20 relative my-auto max-h-[92vh] overflow-y-auto animate-fade-in-up">
             <button
               onClick={() => setIsFormModalOpen(false)}
               className="absolute top-5 right-5 p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"

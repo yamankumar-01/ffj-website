@@ -111,10 +111,10 @@ export const TreeDirectory = () => {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="bg-white rounded-3xl p-6 border border-[#2d6a4f]/15 shadow-md space-y-5">
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-[#2d6a4f]/15 shadow-md space-y-4 sm:space-y-5 animate-fade-in">
         
         {/* Top Row: Search Input + Sort */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4">
           <div className="md:col-span-8 relative">
             <Search className="w-5 h-5 text-gray-400 absolute left-4 top-3.5" />
             <input
@@ -161,11 +161,11 @@ export const TreeDirectory = () => {
         </div>
 
         {/* Bottom Row: Category Pills & Dropdowns */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-gray-100">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-3 border-t border-gray-100">
           
-          {/* Category Filter Pills */}
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs font-bold text-gray-400 mr-2 uppercase tracking-wider">
+          {/* Category Filter Pills (Smooth Touch Horizontal Scroll on Mobile) */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 md:pb-0 scrollbar-none -mx-1 px-1">
+            <span className="text-xs font-bold text-gray-400 mr-1.5 uppercase tracking-wider shrink-0">
               Category:
             </span>
             {categories.map((cat) => (
@@ -175,7 +175,7 @@ export const TreeDirectory = () => {
                   setCategory(cat);
                   setPage(1);
                 }}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                className={`px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer tap-active active:scale-95 ${
                   category === cat
                     ? 'bg-[#1b4332] text-white shadow-xs'
                     : 'bg-[#f0f4f1] text-[#2d6a4f] hover:bg-[#d8f3dc]'
@@ -187,17 +187,17 @@ export const TreeDirectory = () => {
           </div>
 
           {/* Secondary Dropdowns: Campus Zone & Health Status */}
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {/* Zone Selector */}
-            <div className="flex items-center gap-1.5 text-xs">
-              <span className="font-semibold text-gray-500">Zone:</span>
+            <div className="flex items-center gap-1.5 text-xs flex-1 sm:flex-initial">
+              <span className="font-semibold text-gray-500 shrink-0">Zone:</span>
               <select
                 value={zone}
                 onChange={(e) => {
                   setZone(e.target.value);
                   setPage(1);
                 }}
-                className="py-1.5 px-3 rounded-xl bg-[#f0f4f1] border border-[#2d6a4f]/20 text-xs font-semibold text-[#1b4332] focus:outline-none cursor-pointer"
+                className="w-full sm:w-auto py-1.5 px-3 rounded-xl bg-[#f0f4f1] border border-[#2d6a4f]/20 text-xs font-semibold text-[#1b4332] focus:outline-none cursor-pointer"
               >
                 <option value="All">All Campus Zones</option>
                 {zonesList.map((z) => (
@@ -209,15 +209,15 @@ export const TreeDirectory = () => {
             </div>
 
             {/* Health Selector */}
-            <div className="flex items-center gap-1.5 text-xs">
-              <span className="font-semibold text-gray-500">Health:</span>
+            <div className="flex items-center gap-1.5 text-xs flex-1 sm:flex-initial">
+              <span className="font-semibold text-gray-500 shrink-0">Health:</span>
               <select
                 value={healthStatus}
                 onChange={(e) => {
                   setHealthStatus(e.target.value);
                   setPage(1);
                 }}
-                className="py-1.5 px-3 rounded-xl bg-[#f0f4f1] border border-[#2d6a4f]/20 text-xs font-semibold text-[#1b4332] focus:outline-none cursor-pointer"
+                className="w-full sm:w-auto py-1.5 px-3 rounded-xl bg-[#f0f4f1] border border-[#2d6a4f]/20 text-xs font-semibold text-[#1b4332] focus:outline-none cursor-pointer"
               >
                 <option value="All">All Statuses</option>
                 <option value="Healthy">Healthy</option>
@@ -256,7 +256,7 @@ export const TreeDirectory = () => {
         </div>
       ) : (
         <div className="space-y-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {trees.map((tree) => (
               <TreeCard
                 key={tree._id || tree.treeId}
@@ -268,7 +268,7 @@ export const TreeDirectory = () => {
 
           {/* Server-Side Pagination Controls */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-[#2d6a4f]/15">
-            <div className="text-xs font-semibold text-gray-500">
+            <div className="text-xs font-semibold text-gray-500 text-center sm:text-left">
               Showing <strong className="text-[#1b4332]">{trees.length > 0 ? (page - 1) * 50 + 1 : 0}</strong> to{' '}
               <strong className="text-[#1b4332]">{Math.min(page * 50, total)}</strong> of{' '}
               <strong className="text-[#1b4332]">{total}</strong> trees
@@ -278,20 +278,20 @@ export const TreeDirectory = () => {
               <button
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="p-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed text-gray-700 cursor-pointer shadow-xs transition-colors flex items-center gap-1 text-xs font-semibold"
+                className="p-2.5 sm:px-3 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed text-gray-700 cursor-pointer shadow-xs transition-all flex items-center gap-1 text-xs font-semibold tap-active"
               >
                 <ChevronLeft className="w-4 h-4" />
                 <span>Prev</span>
               </button>
 
-              <div className="flex items-center gap-1 px-2 text-xs font-bold text-[#1b4332]">
+              <div className="flex items-center gap-1 px-2.5 text-xs font-bold text-[#1b4332]">
                 Page {page} of {totalPages}
               </div>
 
               <button
                 disabled={page >= totalPages}
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="p-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed text-gray-700 cursor-pointer shadow-xs transition-colors flex items-center gap-1 text-xs font-semibold"
+                className="p-2.5 sm:px-3 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed text-gray-700 cursor-pointer shadow-xs transition-all flex items-center gap-1 text-xs font-semibold tap-active"
               >
                 <span>Next</span>
                 <ChevronRight className="w-4 h-4" />
