@@ -18,12 +18,29 @@ import api from '../services/api';
 import { TreeCard } from '../components/TreeCard';
 import { CampusMap } from '../components/CampusMap';
 import { QRModal } from '../components/QRModal';
+import QRCode from 'qrcode';
+
+// Verified default tree for instant hero showcase (Kalpavriksha - Sacred Campus Heritage)
+const DEFAULT_HERO_TREE = {
+  treeId: 'FFJ-TREE-0018',
+  commonName: 'Kalpavriksha',
+  localName: 'कल्पवृक्ष (Kalp Vriksh)',
+  scientificName: 'Adansonia digitata',
+  category: 'Sacred Heritage',
+  healthStatus: 'Healthy',
+  location: { zone: 'C Block Central Lawn' },
+  photos: [
+    'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=900&auto=format&fit=crop',
+  ],
+};
 
 export const Home = ({ onOpenScanner }) => {
   const [stats, setStats] = useState(null);
   const [featuredTrees, setFeaturedTrees] = useState([]);
   const [previewQRTree, setPreviewQRTree] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [heroTree, setHeroTree] = useState(DEFAULT_HERO_TREE);
+  const [heroQrUrl, setHeroQrUrl] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,8 +53,17 @@ export const Home = ({ onOpenScanner }) => {
         if (statsRes.data.success) {
           setStats(statsRes.data.stats);
         }
-        if (treesRes.data.success) {
+        if (treesRes.data.success && treesRes.data.trees.length > 0) {
           setFeaturedTrees(treesRes.data.trees);
+          // Pick a valid real tree: Kalpavriksha (0018) or Sapodilla (0005) or the first tree with photo
+          const validSelected =
+            treesRes.data.trees.find((t) => t.treeId === 'FFJ-TREE-0018') ||
+            treesRes.data.trees.find((t) => t.treeId === 'FFJ-TREE-0005') ||
+            treesRes.data.trees.find((t) => t.photos && t.photos.length > 0) ||
+            treesRes.data.trees[0];
+          if (validSelected) {
+            setHeroTree(validSelected);
+          }
         }
       } catch (err) {
         console.error('Error fetching home data:', err);
@@ -48,6 +74,37 @@ export const Home = ({ onOpenScanner }) => {
 
     fetchData();
   }, []);
+
+  // Generate real, high-resolution scannable QR code for the active hero tree
+  useEffect(() => {
+    let isMounted = true;
+    if (!heroTree) return;
+
+    if (heroTree.qrCodeData && heroTree.qrCodeData.startsWith('data:image')) {
+      setHeroQrUrl(heroTree.qrCodeData);
+      return;
+    }
+
+    const targetUrl = `https://fruitfull-jaipur.vercel.app/tree/${heroTree.treeId}`;
+    QRCode.toDataURL(targetUrl, {
+      errorCorrectionLevel: 'H',
+      type: 'image/png',
+      margin: 1,
+      width: 280,
+      color: {
+        dark: '#1b4332',
+        light: '#ffffff',
+      },
+    })
+      .then((url) => {
+        if (isMounted) setHeroQrUrl(url);
+      })
+      .catch((err) => console.error('Error generating Hero QR:', err));
+
+    return () => {
+      isMounted = false;
+    };
+  }, [heroTree]);
 
   return (
     <div className="space-y-16 pb-20">
@@ -124,13 +181,13 @@ export const Home = ({ onOpenScanner }) => {
                 {/* Decorative layered glow */}
                 <div className="absolute -inset-1.5 bg-gradient-to-r from-[#52b788] to-[#c2410c] rounded-3xl blur-md opacity-30 animate-pulse" />
                 
-                {/* Hero ID Card Preview */}
-                <div className="relative bg-[#fcfbf7] rounded-3xl p-6 border-2 border-[#1b4332] shadow-2xl space-y-4">
+                {/* Hero ID Card Preview (Live Scannable Digital Tree Aadhar) */}
+                <div className="relative bg-[#fcfbf7] rounded-3xl p-5 sm:p-6 border-2 border-[#1b4332] shadow-2xl space-y-4">
                   
                   {/* Card Header */}
                   <div className="flex items-center justify-between border-b border-[#2d6a4f]/15 pb-3">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-full bg-[#1b4332] text-white flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-[#1b4332] text-white flex items-center justify-center shadow-xs">
                         <Leaf className="w-4 h-4 fill-current" />
                       </div>
                       <div>
@@ -142,61 +199,84 @@ export const Home = ({ onOpenScanner }) => {
                         </span>
                       </div>
                     </div>
-                    <span className="font-mono text-xs font-black text-[#1b4332] bg-[#d8f3dc] px-2 py-0.5 rounded-md border border-[#52b788]/40">
-                      FFJ-TREE-0001
+                    <span className="font-mono text-xs font-black text-[#1b4332] bg-[#d8f3dc] px-2.5 py-1 rounded-md border border-[#52b788]/40 shadow-2xs">
+                      {heroTree.treeId}
                     </span>
                   </div>
 
-                  {/* Image & QR layout */}
+                  {/* Image & Scannable QR layout */}
                   <div className="grid grid-cols-12 gap-3 items-center">
-                    <div className="col-span-7 rounded-2xl overflow-hidden aspect-[4/3] bg-gray-100 border border-black/10 shadow-xs relative">
+                    <div className="col-span-7 rounded-2xl overflow-hidden aspect-[4/3] bg-[#e8f0ec] border border-black/10 shadow-xs relative">
                       <img
-                        src="https://res.cloudinary.com/dcn93ic66/image/upload/v1782473998/FFJ_dev/dqmtfhbt6sng7dnmsisv.jpg"
-                        alt="Mango Tree"
+                        src={
+                          heroTree.photos && heroTree.photos.length > 0
+                            ? heroTree.photos[0]
+                            : 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=900&auto=format&fit=crop'
+                        }
+                        alt={heroTree.commonName}
                         className="w-full h-full object-cover"
                       />
-                      <span className="absolute bottom-1.5 left-1.5 bg-[#1b4332]/90 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
-                        Fruit Tree
+                      <span className="absolute bottom-1.5 left-1.5 bg-[#1b4332]/90 backdrop-blur-xs text-white text-[9px] font-bold px-2 py-0.5 rounded">
+                        {heroTree.category || 'Living Heritage'}
                       </span>
                     </div>
 
-                    <div className="col-span-5 flex flex-col items-center justify-center text-center p-2 bg-[#f0f4f1] rounded-2xl border border-[#2d6a4f]/10">
-                      <div className="w-20 h-20 bg-white p-1 rounded-xl shadow-xs border border-[#52b788]/40 mb-1 flex items-center justify-center">
-                        <QrCode className="w-16 h-16 text-[#1b4332]" />
+                    <div className="col-span-5 flex flex-col items-center justify-center text-center p-2.5 bg-[#f0f4f1] rounded-2xl border border-[#2d6a4f]/10">
+                      <div className="w-20 h-20 bg-white p-1 rounded-xl shadow-xs border border-[#52b788]/40 mb-1.5 flex items-center justify-center overflow-hidden">
+                        {heroQrUrl ? (
+                          <img
+                            src={heroQrUrl}
+                            alt={`Real scannable QR for ${heroTree.treeId}`}
+                            className="w-full h-full object-contain"
+                          />
+                        ) : (
+                          <QrCode className="w-12 h-12 text-[#1b4332] animate-pulse" />
+                        )}
                       </div>
-                      <span className="text-[9px] font-bold text-[#1b4332] uppercase">
-                        Scan with Phone
+                      <span className="text-[9px] font-bold text-[#1b4332] uppercase flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping" />
+                        Scan Live QR
                       </span>
                     </div>
                   </div>
 
                   {/* Species Name */}
                   <div>
-                    <div className="flex items-baseline justify-between">
-                      <h3 className="font-display font-black text-xl text-[#1b4332]">Mango</h3>
-                      <span className="text-sm font-bold text-[#c2410c]">आम (Aam)</span>
+                    <div className="flex items-baseline justify-between gap-2">
+                      <h3 className="font-display font-black text-xl text-[#1b4332] leading-tight">
+                        {heroTree.commonName}
+                      </h3>
+                      {heroTree.localName && (
+                        <span className="text-sm font-bold text-[#c2410c] shrink-0">
+                          {heroTree.localName}
+                        </span>
+                      )}
                     </div>
-                    <p className="text-xs text-[#40916c] font-serif italic">Mangifera indica</p>
+                    <p className="text-xs text-[#40916c] font-serif italic mt-0.5">
+                      {heroTree.scientificName}
+                    </p>
                   </div>
 
                   {/* Vitals pill grid */}
                   <div className="grid grid-cols-2 gap-2 text-[11px] text-gray-700 bg-white p-2.5 rounded-xl border border-[#2d6a4f]/10">
                     <div>
                       <span className="text-gray-400 block text-[9px] uppercase font-bold">Zone</span>
-                      <strong className="text-[#1b4332] truncate block">Block A - Lawn</strong>
+                      <strong className="text-[#1b4332] truncate block">
+                        {heroTree.location?.zone || 'Campus'}
+                      </strong>
                     </div>
                     <div>
                       <span className="text-gray-400 block text-[9px] uppercase font-bold">Health Status</span>
                       <span className="text-emerald-700 font-bold flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                        Healthy
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        {heroTree.healthStatus || 'Healthy'}
                       </span>
                     </div>
                   </div>
 
                   <Link
-                    to="/tree/FFJ-TREE-0001"
-                    className="w-full py-2 px-3 rounded-xl bg-[#1b4332] text-white text-xs font-semibold text-center block hover:bg-[#2d6a4f] transition-colors shadow-xs"
+                    to={`/tree/${heroTree.treeId}`}
+                    className="w-full py-2.5 px-4 rounded-xl bg-[#1b4332] hover:bg-[#2d6a4f] text-white text-xs font-semibold text-center block transition-all shadow-xs tap-active active:scale-[0.98]"
                   >
                     Open Live ID Card →
                   </Link>
