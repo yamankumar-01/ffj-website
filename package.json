@@ -2,9 +2,29 @@
   "name": "ffj-tree-aadhar",
   "version": "1.0.0",
   "description": "Tree Aadhar - Digital Identity System for Fruitfull Jaipur (FFJ)",
+  "main": "backend/src/server.js",
+  "type": "module",
   "scripts": {
+    "start": "node backend/src/server.js",
+    "build": "npm --prefix backend install",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev"
+  },
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "pdfkit": "^0.16.0",
+    "pg": "^8.13.3",
+    "pg-hstore": "^2.3.4",
+    "qrcode": "^1.5.4",
+    "sequelize": "^6.37.5",
+    "sqlite3": "^5.1.7"
   },
   "keywords": [
     "tree-aadhar",
