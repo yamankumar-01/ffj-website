@@ -127,14 +127,81 @@ export const AdminDashboard = () => {
     }
   };
 
-  const handleDownloadCSV = async () => {
+  const handleDownloadCSV = () => {
     setDownloadingCSV(true);
     try {
-      const response = await api.get('/trees/template/csv', {
-        responseType: 'blob',
-        timeout: 30000,
-      });
-      const blob = new Blob([response.data], { type: 'text/csv' });
+      const headers = [
+        'treeId',
+        'commonName',
+        'scientificName',
+        'localName',
+        'category',
+        'zone',
+        'latitude',
+        'longitude',
+        'plantedDate',
+        'plantedBy',
+        'healthStatus',
+        'height',
+        'girth',
+        'caretakerName',
+        'description',
+        'healthBenefits',
+        'culturalSignificance',
+        'photos',
+      ];
+
+      const sampleRows = [
+        [
+          '',
+          'Mango',
+          'Mangifera indica',
+          'आम (Aam)',
+          'Fruit',
+          'Block A - Central Lawn',
+          '26.78198',
+          '75.82251',
+          '2023-07-15',
+          'Batch of 2023 - Environment Club',
+          'Healthy',
+          '3.5',
+          '42',
+          'Ramesh Ji',
+          'The King of Fruits, planted during Van Mahotsav.',
+          'High in Vitamin A and C, aids digestion and skin health.',
+          'Sacred leaves used in traditional Indian toran and festive rituals.',
+          'https://res.cloudinary.com/dcn93ic66/image/upload/v1782473998/FFJ_dev/dqmtfhbt6sng7dnmsisv.jpg',
+        ],
+        [
+          '',
+          'Neem',
+          'Azadirachta indica',
+          'नीम (Neem)',
+          'Medicinal',
+          'Ayurvedic Garden',
+          '26.78245',
+          '75.82210',
+          '2022-08-10',
+          'JECRC Foundation Alumni',
+          'Healthy',
+          '5.2',
+          '68',
+          'Green Team',
+          'A revered medicinal tree renowned for air purification and natural antiseptic qualities.',
+          'Potent antimicrobial, supports blood purification and dental care.',
+          'Considered sacred and a village dispensary in Indian tradition.',
+          'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800',
+        ],
+      ];
+
+      const csvContent =
+        '\uFEFF' + // UTF-8 BOM for Excel compatibility with Hindi characters
+        [
+          headers.join(','),
+          ...sampleRows.map((r) => r.map((val) => `"${String(val).replace(/"/g, '""')}"`).join(',')),
+        ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -145,17 +212,7 @@ export const AdminDashboard = () => {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Error downloading CSV:', err);
-      let errorMsg = err.message;
-      if (err.response?.data instanceof Blob) {
-        try {
-          const text = await err.response.data.text();
-          const json = JSON.parse(text);
-          errorMsg = json.message || text;
-        } catch (_) {}
-      } else if (err.response?.data?.message) {
-        errorMsg = err.response.data.message;
-      }
-      alert('Failed to download template: ' + errorMsg);
+      alert('Failed to download template: ' + err.message);
     } finally {
       setDownloadingCSV(false);
     }

@@ -1,8 +1,18 @@
 import axios from 'axios';
 
+const getBaseURL = () => {
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  if (import.meta.env.DEV) {
+    return '/api';
+  }
+  return 'https://ffj-tree-aadhar-backend.onrender.com/api';
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
-  timeout: 15000,
+  baseURL: getBaseURL(),
+  timeout: 30000,
 });
 
 // Request interceptor to attach JWT token if present
