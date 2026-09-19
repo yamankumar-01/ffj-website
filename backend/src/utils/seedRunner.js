@@ -40,10 +40,36 @@ export const seedDatabase = async () => {
       console.log(`🧹 Removed ${obsoleteCount} obsolete dummy trees from database.`);
     }
 
+    // Load backed-up user photos if available
+    let savedPhotos = {};
+    try {
+      const photosFile = new URL('../data/tree_photos.json', import.meta.url);
+      const fs = await import('fs');
+      if (fs.existsSync(photosFile)) {
+        savedPhotos = JSON.parse(fs.readFileSync(photosFile, 'utf8'));
+      }
+    } catch (e) {
+      console.warn('Could not read tree_photos.json backup:', e.message);
+    }
+
     for (const rawTree of initialTrees) {
       const existing = await Tree.findOne({ where: { treeId: rawTree.treeId } });
       const targetUrl = getBaseTreeUrl(rawTree.treeId);
       const qrCodeData = await generateQRCodeDataUrl(targetUrl);
+
+      // Determine photos: prefer existing DB photos if customized, then savedPhotos backup, then rawTree.photos
+      let photosToKeep = (savedPhotos[rawTree.treeId]?.photos && savedPhotos[rawTree.treeId].photos.length > 0)
+        ? savedPhotos[rawTree.treeId].photos
+        : rawTree.photos;
+
+      if (existing && existing.photos && existing.photos.length > 0) {
+        const hasCustomPhoto = existing.photos.some(
+          (p) => p && (p.startsWith('data:image') || !p.includes('photo-1542273917363-3b1817f69a2d'))
+        );
+        if (hasCustomPhoto) {
+          photosToKeep = existing.photos;
+        }
+      }
 
       const treeData = {
         treeId: rawTree.treeId,
@@ -51,7 +77,7 @@ export const seedDatabase = async () => {
         scientificName: rawTree.scientificName,
         localName: rawTree.localName,
         category: rawTree.category,
-        photos: rawTree.photos,
+        photos: photosToKeep,
         description: rawTree.description,
         healthBenefits: rawTree.healthBenefits,
         culturalSignificance: rawTree.culturalSignificance,
