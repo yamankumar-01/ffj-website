@@ -104,24 +104,37 @@ export const seedDatabase = async () => {
     }
     console.log(`✅ All ${initialTrees.length} botanical trees verified and synchronized in database.`);
 
-    // Ensure default admin exists
-    const adminUser = process.env.ADMIN_USER || 'admin';
-    const adminPass = process.env.ADMIN_PASSWORD || 'ffj@jecrc2025';
+    // Ensure primary admin exists & credentials match requested username & password
+    const adminUser = (process.env.ADMIN_USER || 'abhishekmatoria').toLowerCase().trim();
+    const adminPass = process.env.ADMIN_PASSWORD || 'fruitfulljaipur';
 
-    const existingAdmin = await Admin.findOne({
-      where: { username: adminUser.toLowerCase() },
-    });
-
-    if (!existingAdmin) {
-      await Admin.create({
-        username: adminUser.toLowerCase(),
-        password: adminPass,
-        name: 'Fruitfull Jaipur Administrator',
-        role: 'admin',
-      });
-      console.log(`🛡️ Default admin account created: [User: ${adminUser} | Pass: ${adminPass}]`);
+    // Remove or upgrade any legacy 'admin' accounts
+    const legacyAdmin = await Admin.findOne({ where: { username: 'admin' } });
+    if (legacyAdmin && adminUser !== 'admin') {
+      legacyAdmin.username = adminUser;
+      legacyAdmin.password = adminPass;
+      legacyAdmin.name = 'Abhishek Matoria';
+      await legacyAdmin.save();
+      console.log(`🛡️ Legacy admin account upgraded to: '${adminUser}'`);
     } else {
-      console.log(`🛡️ Admin user '${adminUser}' already configured.`);
+      const existingAdmin = await Admin.findOne({
+        where: { username: adminUser },
+      });
+
+      if (!existingAdmin) {
+        await Admin.create({
+          username: adminUser,
+          password: adminPass,
+          name: 'Abhishek Matoria',
+          role: 'admin',
+        });
+        console.log(`🛡️ Admin account created: '${adminUser}'`);
+      } else {
+        existingAdmin.password = adminPass;
+        existingAdmin.name = 'Abhishek Matoria';
+        await existingAdmin.save();
+        console.log(`🛡️ Admin credentials synchronized for: '${adminUser}'`);
+      }
     }
   } catch (error) {
     console.error('❌ Error during database seeding:', error);
