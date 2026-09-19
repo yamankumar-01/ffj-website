@@ -27,16 +27,13 @@ export const seedDatabase = async () => {
       console.log('✅ All tree QR codes and target URLs upgraded to production URL successfully.');
     }
 
-    const existingCount = await Tree.count();
-    if (existingCount > 0) {
-      console.log(`🌿 Database already contains ${existingCount} trees.`);
-    } else {
-      console.log('🌱 Seeding initial 10 botanical trees with dynamic QR codes...');
-      
-      for (const rawTree of initialTrees) {
-        const targetUrl = getBaseTreeUrl(rawTree.treeId);
-        const qrCodeData = await generateQRCodeDataUrl(targetUrl);
+    console.log('🌱 Verifying botanical trees with production dynamic QR codes...');
+    for (const rawTree of initialTrees) {
+      const existing = await Tree.findOne({ where: { treeId: rawTree.treeId } });
+      const targetUrl = getBaseTreeUrl(rawTree.treeId);
+      const qrCodeData = await generateQRCodeDataUrl(targetUrl);
 
+      if (!existing) {
         await Tree.create({
           treeId: rawTree.treeId,
           commonName: rawTree.commonName,
@@ -60,9 +57,11 @@ export const seedDatabase = async () => {
           qrTargetUrl: targetUrl,
           qrCodeData,
         });
+      } else if (!existing.qrTargetUrl || existing.qrTargetUrl.includes('localhost') || !existing.qrCodeData) {
+        await existing.update({ qrTargetUrl: targetUrl, qrCodeData });
       }
-      console.log('✅ Successfully seeded 10 botanical tree identities with high-res QRs into database.');
     }
+    console.log('✅ All 10 initial botanical trees verified in database.');
 
     // Ensure default admin exists
     const adminUser = process.env.ADMIN_USER || 'admin';

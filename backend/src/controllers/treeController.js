@@ -391,6 +391,11 @@ export const bulkImportCSV = async (req, res) => {
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       try {
+        // Skip completely empty rows
+        if ((!row.commonName || !row.commonName.trim()) && (!row.scientificName || !row.scientificName.trim())) {
+          continue;
+        }
+
         if (!row.commonName || !row.scientificName) {
           errors.push(`Row ${i + 1}: Missing required commonName or scientificName`);
           continue;
