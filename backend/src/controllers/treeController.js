@@ -424,7 +424,7 @@ export const bulkImportCSV = async (req, res) => {
           commonName: row.commonName.trim(),
           scientificName: row.scientificName.trim(),
           localName: row.localName ? row.localName.trim() : row.commonName.trim(),
-          category: ['Fruit', 'Medicinal', 'Ornamental', 'Shade'].includes(row.category)
+          category: ['Fruit', 'Medicinal', 'Sacred', 'Ornamental', 'Shade'].includes(row.category)
             ? row.category
             : 'Fruit',
           description: row.description || `${row.commonName} planted on JECRC Campus.`,

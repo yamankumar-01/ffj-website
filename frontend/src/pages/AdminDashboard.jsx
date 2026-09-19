@@ -978,6 +978,7 @@ export const AdminDashboard = () => {
                   >
                     <option value="Fruit">Fruit Tree</option>
                     <option value="Medicinal">Medicinal Grove</option>
+                    <option value="Sacred">Sacred Heritage</option>
                     <option value="Ornamental">Ornamental</option>
                     <option value="Shade">Shade Canopy</option>
                   </select>

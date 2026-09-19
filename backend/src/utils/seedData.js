@@ -1,253 +1,479 @@
+// Auto-generated botanical tree dataset containing the 18 user campus trees + flagship Mango
 export const initialTrees = [
   {
-    treeId: 'FFJ-TREE-0001',
-    commonName: 'Mango',
-    scientificName: 'Mangifera indica',
-    localName: 'आम (Aam)',
-    category: 'Fruit',
-    photos: [
-      'https://res.cloudinary.com/dcn93ic66/image/upload/v1782473998/FFJ_dev/dqmtfhbt6sng7dnmsisv.jpg',
-      'https://images.unsplash.com/photo-1553279768-865429fa0078?w=800&auto=format&fit=crop',
+    "treeId": "FFJ-TREE-0001",
+    "commonName": "Mango",
+    "scientificName": "Mangifera indica",
+    "localName": "आम (Aam)",
+    "category": "Fruit",
+    "photos": [
+      "https://res.cloudinary.com/dcn93ic66/image/upload/v1782473998/FFJ_dev/dqmtfhbt6sng7dnmsisv.jpg",
+      "https://images.unsplash.com/photo-1553279768-865429fa0078?w=800&auto=format&fit=crop"
     ],
-    description: 'Known affectionately as the "King of Fruits," the Mango is a deeply cherished part of Indian culture, where its leaves are strung across doorways during festivals to bring good luck. Planted in the prime sunlit area of Central Lawn at JECRC.',
-    healthBenefits: 'Incredibly rich in Vitamins A and C, which naturally boost immunity and keep skin glowing. Supports digestive enzymes and eye health.',
-    culturalSignificance: 'Sacred in Hindu traditions. Mango leaves (Toran) signify fertility, prosperity, and divine blessings during housewarmings and Diwali celebrations.',
+    "description": "Known affectionately as the King of Fruits, the Mango is a deeply cherished part of Indian culture, where its leaves are strung across doorways during festivals to bring good luck. Planted in the prime sunlit area of Central Lawn at JECRC.",
+    "healthBenefits": "Incredibly rich in Vitamins A and C, which naturally boost immunity and keep skin glowing. Supports digestive enzymes and eye health.",
+    "culturalSignificance": "Sacred in Hindu traditions. Mango leaves (Toran) signify fertility, prosperity, and divine blessings during housewarmings and Diwali celebrations.",
     plantedDate: new Date('2022-07-15'),
-    plantedBy: 'Dr. Amit Sharma & JECRC Environment Cell',
-    location: {
-      zone: 'Block A - Central Lawn',
-      latitude: 26.78210,
-      longitude: 75.82245,
+    "plantedBy": "Dr. Amit Sharma & JECRC Environment Cell",
+    "location": {
+      "zone": "Block A - Central Lawn",
+      "latitude": 26.7821,
+      "longitude": 75.82245
     },
-    healthStatus: 'Healthy',
+    "healthStatus": "Healthy",
     lastCheckupDate: new Date('2025-01-10'),
-    height: 4.8,
-    girth: 48,
-    caretakerName: 'Ramesh Ji (Senior Horticulturist)',
+    "height": 4.8,
+    "girth": 48,
+    "caretakerName": "Ramesh Ji (Senior Horticulturist)"
   },
   {
-    treeId: 'FFJ-TREE-0002',
-    commonName: 'Curry Leaves',
-    scientificName: 'Murraya koenigii',
-    localName: 'कढ़ी पत्ता (Kadi Patta)',
-    category: 'Medicinal',
-    photos: [
-      'https://res.cloudinary.com/dcn93ic66/image/upload/v1782474098/FFJ_dev/fhsi7g9egvnzz93q0aig.jpg',
+    "treeId": "FFJ-TREE-0002",
+    "commonName": "Sapodilla",
+    "scientificName": "Manilkara zapota",
+    "localName": "चीकू (Cheeku)",
+    "category": "Fruit",
+    "photos": [
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800"
     ],
-    description: 'Essential for that comforting traditional tadka, this aromatic shrub thrives in our campus medicinal grove. Releases rich aromatic oils when leaves are lightly bruised.',
-    healthBenefits: 'Packed with iron, calcium, and digestion-friendly compounds. Traditionally infused into coconut oil for healthy hair growth and blood glucose moderation.',
-    culturalSignificance: 'A cornerstone of South Asian domestic kitchens and Ayurvedic daily rasayana regimens.',
-    plantedDate: new Date('2023-03-22'),
-    plantedBy: 'Batch of 2023 - Department of Biotechnology',
-    location: {
-      zone: 'Ayurvedic Herbal Garden',
-      latitude: 26.78235,
-      longitude: 75.82270,
-    },
-    healthStatus: 'Healthy',
-    lastCheckupDate: new Date('2025-01-14'),
-    height: 2.1,
-    girth: 18,
-    caretakerName: 'Sita Devi (Campus Herbalist)',
-  },
-  {
-    treeId: 'FFJ-TREE-0003',
-    commonName: 'Chiku (Sapodilla)',
-    scientificName: 'Manilkara zapota',
-    localName: 'चीकू (Chiku)',
-    category: 'Fruit',
-    photos: [
-      'https://res.cloudinary.com/dcn93ic66/image/upload/v1782474315/FFJ_dev/gc4em19pnshkuo8zem6w.jpg',
-    ],
-    description: 'A resilient evergreen tree famous for producing sweet, malty, brown granular fruits that thrive wonderfully in Rajasthan’s sunny climate.',
-    healthBenefits: 'Fantastic natural energy booster loaded with natural fructose and dietary fiber. Rich in tannins that act as natural antioxidants.',
-    culturalSignificance: 'A classic Indian kitchen garden favorite, cherished in family smoothies, halwas, and seasonal college harvest festivals.',
-    plantedDate: new Date('2022-09-05'),
-    plantedBy: 'Teachers Day Plantation Drive 2022',
-    location: {
-      zone: 'Block B - Botanical Quad',
-      latitude: 26.78185,
-      longitude: 75.82260,
-    },
-    healthStatus: 'Healthy',
-    lastCheckupDate: new Date('2025-01-08'),
-    height: 3.6,
-    girth: 34,
-    caretakerName: 'Ramesh Ji',
-  },
-  {
-    treeId: 'FFJ-TREE-0004',
-    commonName: 'Bael (Wood Apple)',
-    scientificName: 'Aegle marmelos',
-    localName: 'बेल (Bilva Patra)',
-    category: 'Medicinal',
-    photos: [
-      'https://res.cloudinary.com/dcn93ic66/image/upload/v1782474519/FFJ_dev/oryp9el77yk6dhdnw4nj.jpg',
-    ],
-    description: 'Bael is one of Ayurveda’s greatest gifts for digestive wellness. Its aromatic trifoliate leaves and tough-shelled cooling fruits withstand harsh Rajasthan summers with exceptional drought resistance.',
-    healthBenefits: 'Cools the digestive tract, cures chronic stomach upsets, and balances gut flora. The pulp is made into gut-healing summer sherbets.',
-    culturalSignificance: 'Sacred to Lord Shiva; its trifoliate leaves symbolize the Tridevas and Trishul and are offered in campus temple ceremonies.',
-    plantedDate: new Date('2021-08-15'),
-    plantedBy: 'JECRC Foundation Heritage Council',
-    location: {
-      zone: 'Ayurvedic Herbal Garden',
-      latitude: 26.78240,
-      longitude: 75.82285,
-    },
-    healthStatus: 'Healthy',
-    lastCheckupDate: new Date('2025-01-12'),
-    height: 5.4,
-    girth: 52,
-    caretakerName: 'Green Campus Volunteer Wing',
-  },
-  {
-    treeId: 'FFJ-TREE-0005',
-    commonName: 'Amla (Indian Gooseberry)',
-    scientificName: 'Phyllanthus emblica',
-    localName: 'आंवला (Amla)',
-    category: 'Medicinal',
-    photos: [
-      'https://res.cloudinary.com/dcn93ic66/image/upload/v1782474779/FFJ_dev/yawv5ixzh16yamz1kr7q.jpg',
-    ],
-    description: 'A cornerstone of traditional Indian wellness and the primary active ingredient in the revered immunity tonic Chyawanprash. Known as the eternal youth tree.',
-    healthBenefits: 'Supreme superfood containing nearly twenty times more Vitamin C than citrus fruits. Strengthens hair roots, improves skin luster, and purifies toxins.',
-    culturalSignificance: 'Celebrated on Amla Navami; families historically picnic under its purifying shade to absorb its therapeutic prana.',
-    plantedDate: new Date('2023-01-26'),
-    plantedBy: 'Republic Day Green Mission 2023',
-    location: {
-      zone: 'Block B - Botanical Quad',
-      latitude: 26.78170,
-      longitude: 75.82230,
-    },
-    healthStatus: 'Healthy',
-    lastCheckupDate: new Date('2025-01-11'),
-    height: 3.1,
-    girth: 27,
-    caretakerName: 'Sita Devi',
-  },
-  {
-    treeId: 'FFJ-TREE-0006',
-    commonName: 'Orange (Santra)',
-    scientificName: 'Citrus sinensis',
-    localName: 'संतरा (Santra)',
-    category: 'Fruit',
-    photos: [
-      'https://res.cloudinary.com/dcn93ic66/image/upload/v1782474981/FFJ_dev/tjg18gsngecdirhiczfy.jpg',
-    ],
-    description: 'Evoking crisp winter mornings in Rajasthan, our Santra trees burst with fragrant white blossoms in spring and radiant orange orbs in winter.',
-    healthBenefits: 'Loaded with bioavailable Vitamin C, dietary fiber, and hesperidin for cardiac and capillary health.',
-    culturalSignificance: 'Symbolizes vitality, cheerfulness, and generosity across festival harvest celebrations.',
-    plantedDate: new Date('2023-07-20'),
-    plantedBy: 'Rotaract Club of JECRC',
-    location: {
-      zone: 'Academic Block 1 Perimeter',
-      latitude: 26.78200,
-      longitude: 75.82310,
-    },
-    healthStatus: 'Needs Attention',
-    lastCheckupDate: new Date('2025-01-05'),
-    height: 2.7,
-    girth: 22,
-    caretakerName: 'Ramesh Ji',
-  },
-  {
-    treeId: 'FFJ-TREE-0007',
-    commonName: 'Lemon (Nimbu)',
-    scientificName: 'Citrus limon',
-    localName: 'नींबू (Nimbu)',
-    category: 'Fruit',
-    photos: [
-      'https://res.cloudinary.com/dcn93ic66/image/upload/v1782475053/FFJ_dev/bjbiskdfbjyzqtur9g1b.jpg',
-    ],
-    description: 'From warding off negative energies to delivering India’s favorite summer remedy Shikanji, this thorny citrus tree is an indispensable campus presence.',
-    healthBenefits: 'Purifies digestion, hydrates with alkaline electrolytes, and stimulates lymphatic detox.',
-    culturalSignificance: 'A household talisman of protection against the evil eye (nazar) and symbol of purity.',
-    plantedDate: new Date('2022-11-14'),
-    plantedBy: 'Children\'s Day Eco Drive',
-    location: {
-      zone: 'Hostel Circle Green Corridor',
-      latitude: 26.78160,
-      longitude: 75.82290,
-    },
-    healthStatus: 'Healthy',
-    lastCheckupDate: new Date('2025-01-09'),
-    height: 2.4,
-    girth: 19,
-    caretakerName: 'Hostel Green Council',
-  },
-  {
-    treeId: 'FFJ-TREE-0008',
-    commonName: 'Guava (Amrood)',
-    scientificName: 'Psidium guajava',
-    localName: 'अमरूद (Amrood)',
-    category: 'Fruit',
-    photos: [
-      'https://res.cloudinary.com/dcn93ic66/image/upload/v1782475282/FFJ_dev/bq5ibjfeyz0mxt68kucr.jpg',
-    ],
-    description: 'Highly resilient fruit tree thriving with crisp pink and white flesh guavas. The young tender leaves are routinely harvested by students for soothing throat remedies.',
-    healthBenefits: 'One of the highest dietary fiber contents of any fruit, lowers blood sugar spikes, and is extremely rich in potassium and lycopene.',
-    culturalSignificance: 'Iconic winter comfort fruit enjoyed across North Indian colleges with chaat masala and black salt.',
-    plantedDate: new Date('2022-08-01'),
-    plantedBy: 'Prof. S.K. Vyas (Dean Academics)',
-    location: {
-      zone: 'Sports Complex Tree Line',
-      latitude: 26.78250,
-      longitude: 75.82215,
-    },
-    healthStatus: 'Healthy',
-    lastCheckupDate: new Date('2025-01-13'),
-    height: 3.9,
-    girth: 36,
-    caretakerName: 'Sports Complex Ground Staff',
-  },
-  {
-    treeId: 'FFJ-TREE-0009',
-    commonName: 'Banana Plant',
-    scientificName: 'Musa acuminata',
-    localName: 'केला (Kela)',
-    category: 'Fruit',
-    photos: [
-      'https://res.cloudinary.com/dcn93ic66/image/upload/v1782475372/FFJ_dev/jlybfivphcxt9qep19ly.jpg',
-    ],
-    description: 'Fast-growing giant herbaceous plant with majestic canopy leaves. Every single component—fruit, flower heart, stem, and biodegradable leaf plate—is utilized.',
-    healthBenefits: 'Potent source of instant natural energy, potassium, Vitamin B6, and prebiotic resistant starch.',
-    culturalSignificance: 'Sacred embodiment of Lord Vishnu and Goddess Lakshmi; used at wedding entry arches to bless unions with endless bounty.',
+    "description": "A sweet, malty-flavoured fruit tree that stays evergreen all year and gives dense shade.",
+    "healthBenefits": "Rich in natural sugars, fibre and Vitamin C; gives quick energy and aids digestion.",
+    "culturalSignificance": "A popular seasonal fruit in Indian homes and orchards, enjoyed fresh and in milkshakes.",
     plantedDate: new Date('2023-08-15'),
-    plantedBy: 'Independence Day Eco-Pledge 2023',
-    location: {
-      zone: 'Hostel Circle Green Corridor',
-      latitude: 26.78150,
-      longitude: 75.82320,
+    "plantedBy": "Fruitfull Jaipur Initiative",
+    "location": {
+      "zone": "GH Lawn",
+      "latitude": 26.7814,
+      "longitude": 75.8218
     },
-    healthStatus: 'Healthy',
-    lastCheckupDate: new Date('2025-01-10'),
-    height: 3.2,
-    girth: 29,
-    caretakerName: 'Ramesh Ji',
+    "healthStatus": "Healthy",
+    lastCheckupDate: new Date('2025-01-15'),
+    "height": 2.1,
+    "girth": 25,
+    "caretakerName": "Campus Horticulture Team"
   },
   {
-    treeId: 'FFJ-TREE-0010',
-    commonName: 'Neem',
-    scientificName: 'Azadirachta indica',
-    localName: 'नीम (Neem)',
-    category: 'Medicinal',
-    photos: [
-      'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800&auto=format&fit=crop',
+    "treeId": "FFJ-TREE-0003",
+    "commonName": "Sapodilla",
+    "scientificName": "Manilkara zapota",
+    "localName": "चीकू (Cheeku)",
+    "category": "Fruit",
+    "photos": [
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800"
     ],
-    description: 'The ancient grand guardian of Indian air. Known as the "free tree of India" and the campus natural air purifier, providing dense cooling shade all year long.',
-    healthBenefits: 'Supreme antibacterial, antiviral, and blood-purifying properties. Twigs (datun) traditionally maintain pristine oral hygiene.',
-    culturalSignificance: 'Considered a manifestation of Goddess Shitala. Revered as the natural village pharmacy.',
-    plantedDate: new Date('2020-06-05'),
-    plantedBy: 'World Environment Day Founders Drive',
-    location: {
-      zone: 'Block A - Central Lawn',
-      latitude: 26.78225,
-      longitude: 75.82230,
+    "description": "A sweet, malty-flavoured fruit tree that stays evergreen all year and gives dense shade.",
+    "healthBenefits": "Rich in natural sugars, fibre and Vitamin C; gives quick energy and aids digestion.",
+    "culturalSignificance": "A popular seasonal fruit in Indian homes and orchards, enjoyed fresh and in milkshakes.",
+    plantedDate: new Date('2023-08-15'),
+    "plantedBy": "Fruitfull Jaipur Initiative",
+    "location": {
+      "zone": "GH Lawn",
+      "latitude": 26.78144,
+      "longitude": 75.82184
     },
-    healthStatus: 'Healthy',
-    lastCheckupDate: new Date('2025-01-12'),
-    height: 7.2,
-    girth: 84,
-    caretakerName: 'Ramesh Ji & Green Volunteers',
+    "healthStatus": "Healthy",
+    lastCheckupDate: new Date('2025-01-15'),
+    "height": 2.3,
+    "girth": 28,
+    "caretakerName": "Campus Horticulture Team"
   },
+  {
+    "treeId": "FFJ-TREE-0004",
+    "commonName": "Sapodilla",
+    "scientificName": "Manilkara zapota",
+    "localName": "चीकू (Cheeku)",
+    "category": "Fruit",
+    "photos": [
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800"
+    ],
+    "description": "A sweet, malty-flavoured fruit tree that stays evergreen all year and gives dense shade.",
+    "healthBenefits": "Rich in natural sugars, fibre and Vitamin C; gives quick energy and aids digestion.",
+    "culturalSignificance": "A popular seasonal fruit in Indian homes and orchards, enjoyed fresh and in milkshakes.",
+    plantedDate: new Date('2023-08-15'),
+    "plantedBy": "Fruitfull Jaipur Initiative",
+    "location": {
+      "zone": "GH Lawn",
+      "latitude": 26.78148,
+      "longitude": 75.82188
+    },
+    "healthStatus": "Healthy",
+    lastCheckupDate: new Date('2025-01-15'),
+    "height": 1.8,
+    "girth": 22,
+    "caretakerName": "Campus Horticulture Team"
+  },
+  {
+    "treeId": "FFJ-TREE-0005",
+    "commonName": "Sapodilla",
+    "scientificName": "Manilkara zapota",
+    "localName": "चीकू (Cheeku)",
+    "category": "Fruit",
+    "photos": [
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800"
+    ],
+    "description": "A sweet, malty-flavoured fruit tree that stays evergreen all year and gives dense shade.",
+    "healthBenefits": "Rich in natural sugars, fibre and Vitamin C; gives quick energy and aids digestion.",
+    "culturalSignificance": "A popular seasonal fruit in Indian homes and orchards, enjoyed fresh and in milkshakes.",
+    plantedDate: new Date('2023-08-15'),
+    "plantedBy": "Fruitfull Jaipur Initiative",
+    "location": {
+      "zone": "GH Lawn",
+      "latitude": 26.78152,
+      "longitude": 75.82192
+    },
+    "healthStatus": "Healthy",
+    lastCheckupDate: new Date('2025-01-15'),
+    "height": 3,
+    "girth": 36,
+    "caretakerName": "Campus Horticulture Team"
+  },
+  {
+    "treeId": "FFJ-TREE-0006",
+    "commonName": "Sapodilla",
+    "scientificName": "Manilkara zapota",
+    "localName": "चीकू (Cheeku)",
+    "category": "Fruit",
+    "photos": [
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800"
+    ],
+    "description": "A sweet, malty-flavoured fruit tree that stays evergreen all year and gives dense shade.",
+    "healthBenefits": "Rich in natural sugars, fibre and Vitamin C; gives quick energy and aids digestion.",
+    "culturalSignificance": "A popular seasonal fruit in Indian homes and orchards, enjoyed fresh and in milkshakes.",
+    plantedDate: new Date('2023-08-15'),
+    "plantedBy": "Fruitfull Jaipur Initiative",
+    "location": {
+      "zone": "GH Lawn",
+      "latitude": 26.78156,
+      "longitude": 75.8218
+    },
+    "healthStatus": "Healthy",
+    lastCheckupDate: new Date('2025-01-15'),
+    "height": 1.5,
+    "girth": 18,
+    "caretakerName": "Campus Horticulture Team"
+  },
+  {
+    "treeId": "FFJ-TREE-0007",
+    "commonName": "Sapodilla",
+    "scientificName": "Manilkara zapota",
+    "localName": "चीकू (Cheeku)",
+    "category": "Fruit",
+    "photos": [
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800"
+    ],
+    "description": "A sweet, malty-flavoured fruit tree that stays evergreen all year and gives dense shade.",
+    "healthBenefits": "Rich in natural sugars, fibre and Vitamin C; gives quick energy and aids digestion.",
+    "culturalSignificance": "A popular seasonal fruit in Indian homes and orchards, enjoyed fresh and in milkshakes.",
+    plantedDate: new Date('2023-08-15'),
+    "plantedBy": "Fruitfull Jaipur Initiative",
+    "location": {
+      "zone": "GH Lawn",
+      "latitude": 26.7816,
+      "longitude": 75.82184
+    },
+    "healthStatus": "Healthy",
+    lastCheckupDate: new Date('2025-01-15'),
+    "height": 2.3,
+    "girth": 28,
+    "caretakerName": "Campus Horticulture Team"
+  },
+  {
+    "treeId": "FFJ-TREE-0008",
+    "commonName": "Sapodilla",
+    "scientificName": "Manilkara zapota",
+    "localName": "चीकू (Cheeku)",
+    "category": "Fruit",
+    "photos": [
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800"
+    ],
+    "description": "A sweet, malty-flavoured fruit tree that stays evergreen all year and gives dense shade.",
+    "healthBenefits": "Rich in natural sugars, fibre and Vitamin C; gives quick energy and aids digestion.",
+    "culturalSignificance": "A popular seasonal fruit in Indian homes and orchards, enjoyed fresh and in milkshakes.",
+    plantedDate: new Date('2023-08-15'),
+    "plantedBy": "Fruitfull Jaipur Initiative",
+    "location": {
+      "zone": "GH Lawn",
+      "latitude": 26.78164,
+      "longitude": 75.82188
+    },
+    "healthStatus": "Healthy",
+    lastCheckupDate: new Date('2025-01-15'),
+    "height": 1,
+    "girth": 12,
+    "caretakerName": "Campus Horticulture Team"
+  },
+  {
+    "treeId": "FFJ-TREE-0009",
+    "commonName": "Sapodilla",
+    "scientificName": "Manilkara zapota",
+    "localName": "चीकू (Cheeku)",
+    "category": "Fruit",
+    "photos": [
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800"
+    ],
+    "description": "A sweet, malty-flavoured fruit tree that stays evergreen all year and gives dense shade.",
+    "healthBenefits": "Rich in natural sugars, fibre and Vitamin C; gives quick energy and aids digestion.",
+    "culturalSignificance": "A popular seasonal fruit in Indian homes and orchards, enjoyed fresh and in milkshakes.",
+    plantedDate: new Date('2023-08-15'),
+    "plantedBy": "Fruitfull Jaipur Initiative",
+    "location": {
+      "zone": "C Block Lawn",
+      "latitude": 26.78233,
+      "longitude": 75.82332
+    },
+    "healthStatus": "Healthy",
+    lastCheckupDate: new Date('2025-01-15'),
+    "height": 1.5,
+    "girth": 18,
+    "caretakerName": "Campus Horticulture Team"
+  },
+  {
+    "treeId": "FFJ-TREE-0010",
+    "commonName": "Java Plum",
+    "scientificName": "Syzygium cumini",
+    "localName": "जामुन (Jamun)",
+    "category": "Fruit",
+    "photos": [
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800"
+    ],
+    "description": "A tall, evergreen tree bearing deep purple, tangy-sweet berries in summer.",
+    "healthBenefits": "Rich in iron and antioxidants; traditionally used to support blood sugar balance and digestion.",
+    "culturalSignificance": "Highly valued in Ayurveda and Indian folk tradition; its fruit is a beloved monsoon-season treat.",
+    plantedDate: new Date('2023-08-15'),
+    "plantedBy": "Fruitfull Jaipur Initiative",
+    "location": {
+      "zone": "C Block Lawn",
+      "latitude": 26.78237,
+      "longitude": 75.8232
+    },
+    "healthStatus": "Healthy",
+    lastCheckupDate: new Date('2025-01-15'),
+    "height": 3.2,
+    "girth": 38,
+    "caretakerName": "Campus Horticulture Team"
+  },
+  {
+    "treeId": "FFJ-TREE-0011",
+    "commonName": "Lemon",
+    "scientificName": "Citrus limon",
+    "localName": "नींबू (Neembu)",
+    "category": "Fruit",
+    "photos": [
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800"
+    ],
+    "description": "A small evergreen citrus tree with fragrant blossoms and sour, juicy fruits.",
+    "healthBenefits": "Excellent source of Vitamin C; supports immunity, digestion and hydration.",
+    "culturalSignificance": "Used in daily Indian cooking, home remedies and even as a protective charm (nimbu-mirchi).",
+    plantedDate: new Date('2023-08-15'),
+    "plantedBy": "Fruitfull Jaipur Initiative",
+    "location": {
+      "zone": "C Block Lawn",
+      "latitude": 26.78241,
+      "longitude": 75.82324
+    },
+    "healthStatus": "Healthy",
+    lastCheckupDate: new Date('2025-01-15'),
+    "height": 1.5,
+    "girth": 18,
+    "caretakerName": "Campus Horticulture Team"
+  },
+  {
+    "treeId": "FFJ-TREE-0012",
+    "commonName": "Guava",
+    "scientificName": "Psidium guajava",
+    "localName": "अमरूद (Amrood)",
+    "category": "Fruit",
+    "photos": [
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800"
+    ],
+    "description": "A hardy fruit tree that bears crunchy, aromatic fruits almost throughout the year.",
+    "healthBenefits": "Very high in Vitamin C and dietary fibre; good for digestion and immunity.",
+    "culturalSignificance": "A common and much-loved winter fruit, often eaten with a sprinkle of black salt and spices.",
+    plantedDate: new Date('2023-08-15'),
+    "plantedBy": "Fruitfull Jaipur Initiative",
+    "location": {
+      "zone": "C Block Lawn",
+      "latitude": 26.78245,
+      "longitude": 75.82328
+    },
+    "healthStatus": "Healthy",
+    lastCheckupDate: new Date('2025-01-15'),
+    "height": 1.4,
+    "girth": 17,
+    "caretakerName": "Campus Horticulture Team"
+  },
+  {
+    "treeId": "FFJ-TREE-0013",
+    "commonName": "Karonda (Bengal Currant)",
+    "scientificName": "Carissa carandas",
+    "localName": "करौंदा (Karonda)",
+    "category": "Fruit",
+    "photos": [
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800"
+    ],
+    "description": "A thorny, drought-tolerant shrub that bears small tangy fruits; also used as a hedge plant.",
+    "healthBenefits": "Rich in iron and Vitamin C; used in traditional remedies for digestion and anaemia.",
+    "culturalSignificance": "Widely used in Indian pickles, chutneys and preserves.",
+    plantedDate: new Date('2023-08-15'),
+    "plantedBy": "Fruitfull Jaipur Initiative",
+    "location": {
+      "zone": "C Block Lawn",
+      "latitude": 26.78249,
+      "longitude": 75.82332
+    },
+    "healthStatus": "Healthy",
+    lastCheckupDate: new Date('2025-01-15'),
+    "height": 1.3,
+    "girth": 16,
+    "caretakerName": "Campus Horticulture Team"
+  },
+  {
+    "treeId": "FFJ-TREE-0014",
+    "commonName": "Bael",
+    "scientificName": "Aegle marmelos",
+    "localName": "बेल (Bael / Belpatra)",
+    "category": "Medicinal",
+    "photos": [
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800"
+    ],
+    "description": "A sacred, hardy tree with distinctive three-leaflet leaves and a hard-shelled fruit.",
+    "healthBenefits": "Bael fruit and leaves are used in Ayurveda for digestion, cooling the body and gut health.",
+    "culturalSignificance": "Bael leaves (Belpatra) are offered to Lord Shiva and are considered highly auspicious.",
+    plantedDate: new Date('2023-08-15'),
+    "plantedBy": "Fruitfull Jaipur Initiative",
+    "location": {
+      "zone": "Fal Mahal",
+      "latitude": 26.78288,
+      "longitude": 75.8227
+    },
+    "healthStatus": "Healthy",
+    lastCheckupDate: new Date('2025-01-15'),
+    "height": 1.5,
+    "girth": 18,
+    "caretakerName": "Campus Horticulture Team"
+  },
+  {
+    "treeId": "FFJ-TREE-0015",
+    "commonName": "Cherry",
+    "scientificName": "Prunus avium",
+    "localName": "चेरी (Cherry)",
+    "category": "Fruit",
+    "photos": [
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800"
+    ],
+    "description": "A fruit-bearing tree with small, sweet-tart red fruits.",
+    "healthBenefits": "Contains antioxidants and Vitamin C; may help reduce inflammation.",
+    "culturalSignificance": "A colourful fruit enjoyed fresh and in desserts.",
+    plantedDate: new Date('2023-08-15'),
+    "plantedBy": "Fruitfull Jaipur Initiative",
+    "location": {
+      "zone": "Fal Mahal",
+      "latitude": 26.78292,
+      "longitude": 75.82274
+    },
+    "healthStatus": "Healthy",
+    lastCheckupDate: new Date('2025-01-15'),
+    "height": 1.2,
+    "girth": 14,
+    "caretakerName": "Campus Horticulture Team"
+  },
+  {
+    "treeId": "FFJ-TREE-0016",
+    "commonName": "Apple",
+    "scientificName": "Malus domestica",
+    "localName": "सेब (Seb)",
+    "category": "Fruit",
+    "photos": [
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800"
+    ],
+    "description": "A deciduous fruit tree known for its crisp, sweet fruits.",
+    "healthBenefits": "Good source of fibre and antioxidants; supports heart health and digestion.",
+    "culturalSignificance": "Symbol of health in popular saying: 'an apple a day keeps the doctor away'.",
+    plantedDate: new Date('2023-08-15'),
+    "plantedBy": "Fruitfull Jaipur Initiative",
+    "location": {
+      "zone": "Fal Mahal",
+      "latitude": 26.78296,
+      "longitude": 75.82278
+    },
+    "healthStatus": "Healthy",
+    lastCheckupDate: new Date('2025-01-15'),
+    "height": 2,
+    "girth": 24,
+    "caretakerName": "Campus Horticulture Team"
+  },
+  {
+    "treeId": "FFJ-TREE-0017",
+    "commonName": "Sapodilla",
+    "scientificName": "Manilkara zapota",
+    "localName": "चीकू (Cheeku)",
+    "category": "Fruit",
+    "photos": [
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800"
+    ],
+    "description": "A sweet, malty-flavoured fruit tree that stays evergreen all year and gives dense shade.",
+    "healthBenefits": "Rich in natural sugars, fibre and Vitamin C; gives quick energy and aids digestion.",
+    "culturalSignificance": "A popular seasonal fruit in Indian homes and orchards, enjoyed fresh and in milkshakes.",
+    plantedDate: new Date('2023-08-15'),
+    "plantedBy": "Fruitfull Jaipur Initiative",
+    "location": {
+      "zone": "Fal Mahal",
+      "latitude": 26.783,
+      "longitude": 75.82282
+    },
+    "healthStatus": "Healthy",
+    lastCheckupDate: new Date('2025-01-15'),
+    "height": 2.9,
+    "girth": 35,
+    "caretakerName": "Campus Horticulture Team"
+  },
+  {
+    "treeId": "FFJ-TREE-0018",
+    "commonName": "Kalpavriksha",
+    "scientificName": "Adansonia digitata",
+    "localName": "कल्पवृक्ष (Kalp Vriksh)",
+    "category": "Sacred",
+    "photos": [
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800"
+    ],
+    "description": "A long-lived, massive-trunked tree known as the 'wish-fulfilling tree'.",
+    "healthBenefits": "Fruit pulp is rich in Vitamin C, calcium and fibre; leaves and bark have traditional medicinal uses.",
+    "culturalSignificance": "Revered in Indian tradition as the divine wish-fulfilling tree (Kalpavriksha).",
+    plantedDate: new Date('2023-08-15'),
+    "plantedBy": "Fruitfull Jaipur Initiative",
+    "location": {
+      "zone": "C Block",
+      "latitude": 26.78264,
+      "longitude": 75.8232
+    },
+    "healthStatus": "Healthy",
+    lastCheckupDate: new Date('2025-01-15'),
+    "height": 3.9,
+    "girth": 47,
+    "caretakerName": "Campus Horticulture Team"
+  },
+  {
+    "treeId": "FFJ-TREE-0019",
+    "commonName": "Pomegranate",
+    "scientificName": "Punica granatum",
+    "localName": "अनार (Anar)",
+    "category": "Fruit",
+    "photos": [
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800"
+    ],
+    "description": "A small, bushy fruit tree bearing ruby-red, jewel-like seeds.",
+    "healthBenefits": "Packed with antioxidants and Vitamin C; supports heart health and blood building.",
+    "culturalSignificance": "Considered a symbol of prosperity and fertility in Indian culture.",
+    plantedDate: new Date('2023-08-15'),
+    "plantedBy": "Fruitfull Jaipur Initiative",
+    "location": {
+      "zone": "GH Lawn",
+      "latitude": 26.78208,
+      "longitude": 75.82184
+    },
+    "healthStatus": "Healthy",
+    lastCheckupDate: new Date('2025-01-15'),
+    "height": 1,
+    "girth": 12,
+    "caretakerName": "Campus Horticulture Team"
+  }
 ];
